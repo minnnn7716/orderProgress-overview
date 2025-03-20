@@ -1,7 +1,18 @@
-function App() {
+import { memo } from "react"
+
+// Component
+import { MainContent } from "./views/MainContent";
+
+const App = memo(() => {
+
   return (
-    <>App</>
+    <section className="container py-4">
+      <section className="flex align-items-center justify-content-between mb-2">
+        <h1 className="m-0 text-gray-700 text-2xl font-semibold mr-4">訂單進度總覽</h1>
+      </section>
+      <MainContent />
+    </section>
   )
-}
+})
 
 export default App
