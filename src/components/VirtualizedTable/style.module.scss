@@ -1,0 +1,121 @@
+.tableWrap {
+  position: relative;
+  overflow: hidden;
+  background-color: #ffffff;
+  border-radius: .75rem;
+  box-shadow: 0 4px 4px #d8e4f250, 0 4px 15px #b4c0cf50;
+}
+
+.tableNoticeText {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--surface-600);
+  font-weight: 500;
+}
+
+.tableContainer {
+  overflow: auto;
+  position: relative;
+  height: 85vh;
+}
+
+.table {
+  display: grid;
+  text-align: center;
+  font-size: .9rem;
+}
+
+.thead {
+  display: grid;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+
+  tr {
+    display: flex;
+    width: 100%;
+  }
+
+  th {
+    padding: .75rem .75rem 1rem .75rem;
+    cursor: pointer;
+    user-select: none;
+    background-color: #d3e1f2;
+  }
+
+  .sorted {
+    position: relative;
+    color: #0854d6;
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 6px;
+      width: 10%;
+      height: 4px;
+      background-color: #0853d6c4;
+      border-radius: 1rem;
+    }
+  }
+}
+
+.headerContent {
+  width: -webkit-fill-available;
+  overflow: hidden;
+
+  p {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.tbody {
+  display: grid;
+  position: relative;
+
+  tr {
+    display: flex;
+    position: absolute;
+    width: 100%;
+    background-color: #ffffff;
+    border: 1px solid #f2f4f5;
+
+    &:not(.selected):hover {
+      background-color: #f2f4f5;
+    }
+  }
+
+  td {
+    padding: .5rem;
+
+    div {
+      position: relative;
+      display: inline-block;
+      padding: .5rem;
+      width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      vertical-align: middle;
+      border: 1px solid transparent;
+  
+      &[data-overrow="true"]:hover {
+        width: auto;
+        z-index: 1;
+        background-color: #e0e8f3;
+        outline: 2px solid #ffffff;
+        border-color: #bfd0e5;
+        border-radius: 0.25rem;
+        box-shadow: 0 2px 6px #00000020;
+      }
+    }
+  }
+
+  .selected {
+    background-color: #eef3fa;
+    border: 1px solid #d3e1f2;
+  }
+}
