@@ -1,34 +1,31 @@
 import { useState, useRef, useEffect, useMemo, memo } from 'react'
 import { useVirtualizer } from '@tanstack/react-virtual'
 
+// Configs
 import { columnMeta } from 'src/config/columnMeta'
 
-// Component
+// Components
 import { Tooltip } from 'primereact/tooltip';
 import { DebouncedInput } from 'src/components/Filter';
-// import { Fieldset } from 'primereact/fieldset';
+import { TableStatus } from './components/TableStatus';
 
 // Tanstack
 import {
-  Row,
-  Column,
   flexRender,
   getCoreRowModel,
   getSortedRowModel,
   getFilteredRowModel,
   useReactTable,
-  ColumnFiltersState,
-  createColumnHelper,
-  HeaderContext,
-  CellContext
 } from '@tanstack/react-table'
 
-// TypeScript Rule
-import { ColumnMeta, CellDataFor, ColumnValueType, ColumnDefinition, ColumnMetaKey } from 'src/types/dataTypes';
+// Types
+import { Row, ColumnFiltersState } from '@tanstack/react-table'
+import { RowData } from 'src/types/dataTypes';
 import { IVirtualizedTableProps } from './types';
 
 // utilities
-import { sortFn, filterFn, fuzzyFilterFn } from './tableUtilities';
+import { generateColumns } from './utilities/generateTable';
+import { fuzzyFilterFn, getColumnCanGlobalFilter } from './tableUtilities';
 import { useOrderCacheTime } from 'src/api/fetchData';
 import { formatDate } from 'src/utilities/formatDate';
 
@@ -36,7 +33,7 @@ import { formatDate } from 'src/utilities/formatDate';
 import style from './style.module.scss'
 import { classNames } from 'primereact/utils';
 
-export const VirtualizedTable = memo(({ error, message, isLoading, rowData, initialState, setDataLength }: IVirtualizedTableProps) => {
+export const VirtualizedTable = memo(({ error, message, isLoading, isCaching, rowData, initialState, setDataLength }: IVirtualizedTableProps) => {
   const { data: cacheTimeData } = useOrderCacheTime();
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [globalFilter, setGlobalFilter] = useState('')
@@ -163,20 +160,13 @@ export const VirtualizedTable = memo(({ error, message, isLoading, rowData, init
       </Fieldset> */}
 
       <div className={style.tableWrap}>
-        {
-          error && import.meta.env.DEV
-            ? (<p className={style.tableNoticeText}>
-              {`${error}`} <span className='text-xl'>😵‍💫</span>
-              {message}
-            </p>)
-            : error
-              ? <p className={style.tableNoticeText}>系統發生錯誤，請聯絡 IT，謝謝<span className='text-xl'>😵‍💫</span></p>
-              : isLoading
-                ? <p className={style.tableNoticeText}>Loading... <span className='text-xl'>😌</span></p>
-                : !table.getFilteredRowModel().rows.length
-                  ? <p className={style.tableNoticeText}>沒有符合的資料 <span className='text-xl'>🧐</span></p>
-                  : null
-        }
+        <TableStatus
+          tableLength={table.getFilteredRowModel().rows.length}
+          error={error}
+          message={message}
+          isLoading={isLoading}
+          isCaching={isCaching}
+        />
         <div className={style.tableContainer} ref={tableContainerRef}>
           <table className={style.table}>
             <thead className={style.thead}>
@@ -233,7 +223,7 @@ export const VirtualizedTable = memo(({ error, message, isLoading, rowData, init
             >
               {
                 virtualRows.map(virtualRow => {
-                  const row = rows[virtualRow.index] as Row<CellDataFor>
+                  const row = rows[virtualRow.index] as Row<RowData>
                   const visibleCells = row.getVisibleCells()
 
                   return (
@@ -259,7 +249,7 @@ export const VirtualizedTable = memo(({ error, message, isLoading, rowData, init
                             key={cell.id}
                             style={{
                               width: 200,
-                              ...cellMeta?.getErrorStyle?.(cell.getContext())
+                              ...cellMeta?.getRemindStyle?.(cell.getContext())
                             }}
 
                           >
@@ -295,124 +285,3 @@ export const VirtualizedTable = memo(({ error, message, isLoading, rowData, init
     </>
   )
 })
-
-//#region Column Setting
-const getColumnCanGlobalFilter = (column: Column<CellDataFor>) => {
-  return column.columnDef.enableGlobalFilter ?? column.getCanGlobalFilter()
-}
-
-const generateColumns = (columnData: ColumnMeta) => {
-  const columnHelper = createColumnHelper<CellDataFor>();
-
-  return Object.entries(columnData)
-    .map(([key, info]) =>
-      columnHelper.accessor((row) => row[key as keyof CellDataFor], {
-        id: key,
-        header: GenerateHeader,
-        cell: GenerateCell, // equal info.row.original[key as ColumnKey].value
-        enableHiding: info.visible,
-        meta: {
-          getContentLength: (cellCtx) => {
-            const valueType = info.type;
-            const value = String(cellCtx.getValue());
-
-            switch (valueType) {
-              case 'string':
-                return value.length > 20;
-              default:
-                return false
-            }
-          },
-          getErrorStyle: (cellCtx) => {
-            const rowData = cellCtx.row.original;
-
-            if (info.errorInfo !== '' && rowData[info.errorInfo as ColumnMetaKey] === 'error') {
-              return {
-                fontWeight: "700",
-                color: "#7d4e00",
-                backgroundColor: "#fff7d5"
-              }
-            }
-
-            const rawValue = cellCtx.getValue();
-
-            if (key === 'rcvFabRate' || key === 'poRate') {
-              if (rawValue == null || (typeof rawValue === 'number' && rawValue > 100)) {
-                return {
-                  fontWeight: "700",
-                  color: "#ad0055",
-                  backgroundColor: "#ffe4e8"
-                }
-              }
-
-              if (typeof rawValue === 'number' && rawValue > 80 && rawValue <= 100) {
-                return {
-                  fontWeight: "700",
-                  color: "#7d4e00",
-                  backgroundColor: "#fff7d5"
-                }
-              }
-            }
-
-            return {};
-          },
-          getInfo: info,
-          getKey: key,
-        },
-        sortingFn: sortFn,
-        filterFn: filterFn,
-        enableGlobalFilter: true
-      })
-    );
-};
-
-const GenerateHeader = memo((headerCtx: HeaderContext<CellDataFor, CellDataFor>) => {
-  const { meta } = headerCtx.column.columnDef;
-  const info = meta?.getInfo ?? '';
-  const key = meta?.getKey ?? '';
-
-  return (
-    <div className={classNames(
-      style.headerContent,
-      'toolTip-target'
-    )}
-    data-pr-tooltip={info.description.length > 8 ? info.description : ''}
-    >
-      <p className='m-0 font-medium'>{info.description}</p>
-      <p className='m-0 text-xs font-normal'>{key}</p>
-    </div>)
-});
-
-const GenerateCell = memo((
-  cellCtx: CellContext<CellDataFor, ColumnValueType<ColumnDefinition>>
-) => {
-  const { meta } = cellCtx.column.columnDef;
-  const info = meta?.getInfo ?? '';
-  const key = meta?.getKey ?? '';
-
-  const rawValue = cellCtx.getValue();
-  let content = rawValue;
-
-  if (info.format === 'date-time') {
-    content = formatDate(String(content));
-  }
-
-  if (rawValue == null) {
-    content = ''
-  }
-
-  if (key === 'rcvFabRate' || key === 'poRate') {
-    if (typeof rawValue === 'number' && rawValue > 0) {
-      content = `${rawValue}%`
-    }
-  }
-
-  return (
-    <div>
-      <p className='m-0'>
-        {String(content)}
-      </p>
-    </div>
-  )
-})
-//#endregion
