@@ -5,7 +5,7 @@ export const columnMeta = {
     "format": "",
     "nullable": false,
     "visible": true,
-    "errorInfo": ""
+    "correspondColumn": ""
   },
   "facName": {
     "type": "string",
@@ -13,7 +13,7 @@ export const columnMeta = {
     "format": "",
     "nullable": false,
     "visible": true,
-    "errorInfo": ""
+    "correspondColumn": ""
   },
   "realCustID_c": {
     "type": "string",
@@ -21,7 +21,7 @@ export const columnMeta = {
     "format": "",
     "nullable": false,
     "visible": true,
-    "errorInfo": ""
+    "correspondColumn": ""
   },
   "mpO_c": {
     "type": "string",
@@ -29,7 +29,7 @@ export const columnMeta = {
     "format": "",
     "nullable": false,
     "visible": true,
-    "errorInfo": ""
+    "correspondColumn": ""
   },
   "orderNum": {
     "type": "number",
@@ -37,7 +37,7 @@ export const columnMeta = {
     "format": "",
     "nullable": false,
     "visible": true,
-    "errorInfo": ""
+    "correspondColumn": ""
   },
   "styleNumber_c": {
     "type": "string",
@@ -45,7 +45,7 @@ export const columnMeta = {
     "format": "",
     "nullable": false,
     "visible": true,
-    "errorInfo": ""
+    "correspondColumn": ""
   },
   "orderDate": {
     "type": "string",
@@ -53,7 +53,7 @@ export const columnMeta = {
     "format": "date-time",
     "nullable": true,
     "visible": true,
-    "errorInfo": ""
+    "correspondColumn": ""
   },
   "requestDate": {
     "type": "string",
@@ -61,15 +61,15 @@ export const columnMeta = {
     "format": "date-time",
     "nullable": true,
     "visible": true,
-    "errorInfo": ""
+    "correspondColumn": ""
   },
   "buyInfo_c": {
     "type": "string",
-    "description": "購買資訊",
+    "description": "BuyInfo",
     "format": "",
     "nullable": false,
     "visible": true,
-    "errorInfo": ""
+    "correspondColumn": ""
   },
   "ordSaleQty": {
     "type": "number",
@@ -77,7 +77,7 @@ export const columnMeta = {
     "format": "",
     "nullable": false,
     "visible": true,
-    "errorInfo": ""
+    "correspondColumn": ""
   },
   "orderPrice": {
     "type": "string",
@@ -85,7 +85,7 @@ export const columnMeta = {
     "format": "",
     "nullable": false,
     "visible": true,
-    "errorInfo": ""
+    "correspondColumn": ""
   },
   "bomFab": {
     "type": "string",
@@ -93,7 +93,7 @@ export const columnMeta = {
     "format": "",
     "nullable": false,
     "visible": true,
-    "errorInfo": ""
+    "correspondColumn": ""
   },
   "bomFabDayMin": {
     "type": "string",
@@ -101,7 +101,7 @@ export const columnMeta = {
     "format": "date-time",
     "nullable": true,
     "visible": true,
-    "errorInfo": ""
+    "correspondColumn": ""
   },
   "bomFabDayMax": {
     "type": "string",
@@ -109,7 +109,7 @@ export const columnMeta = {
     "format": "date-time",
     "nullable": true,
     "visible": true,
-    "errorInfo": "bomFabError"
+    "correspondColumn": "bomFabError"
   },
   "bomFabError": {
     "type": "string",
@@ -117,7 +117,7 @@ export const columnMeta = {
     "format": "date-time",
     "nullable": false,
     "visible": false,
-    "errorInfo": ""
+    "correspondColumn": ""
   },
   "ordMarkCreateDate": {
     "type": "string",
@@ -125,7 +125,7 @@ export const columnMeta = {
     "format": "date-time",
     "nullable": true,
     "visible": true,
-    "errorInfo": ""
+    "correspondColumn": ""
   },
   "poFabDate": {
     "type": "string",
@@ -133,7 +133,7 @@ export const columnMeta = {
     "format": "date-time",
     "nullable": true,
     "visible": true,
-    "errorInfo": ""
+    "correspondColumn": ""
   },
   "poFabPromiseDate": {
     "type": "string",
@@ -141,7 +141,7 @@ export const columnMeta = {
     "format": "date-time",
     "nullable": true,
     "visible": true,
-    "errorInfo": ""
+    "correspondColumn": ""
   },
   "poFabComments": {
     "type": "string",
@@ -149,7 +149,7 @@ export const columnMeta = {
     "format": "",
     "nullable": false,
     "visible": true,
-    "errorInfo": ""
+    "correspondColumn": ""
   },
   "ordSugQty": {
     "type": "number",
@@ -157,7 +157,7 @@ export const columnMeta = {
     "format": "",
     "nullable": false,
     "visible": true,
-    "errorInfo": ""
+    "correspondColumn": ""
   },
   "poFabQty": {
     "type": "number",
@@ -165,7 +165,7 @@ export const columnMeta = {
     "format": "",
     "nullable": false,
     "visible": true,
-    "errorInfo": ""
+    "correspondColumn": ""
   },
   "tranFabQty": {
     "type": "number",
@@ -173,15 +173,15 @@ export const columnMeta = {
     "format": "",
     "nullable": false,
     "visible": true,
-    "errorInfo": ""
+    "correspondColumn": ""
   },
   "poRate": {
     "type": "number",
     "description": "主料採購率",
     "format": "",
     "nullable": true,
-    "visible": true,
-    "errorInfo": ""
+    "visible": false,
+    "correspondColumn": ""
   },
   "poRcvItem": {
     "type": "string",
@@ -189,7 +189,7 @@ export const columnMeta = {
     "format": "",
     "nullable": false,
     "visible": true,
-    "errorInfo": ""
+    "correspondColumn": ""
   },
   "rcvFabQty": {
     "type": "number",
@@ -197,7 +197,7 @@ export const columnMeta = {
     "format": "",
     "nullable": false,
     "visible": true,
-    "errorInfo": ""
+    "correspondColumn": ""
   },
   "rcvFabRate": {
     "type": "number",
@@ -205,7 +205,7 @@ export const columnMeta = {
     "format": "",
     "nullable": true,
     "visible": true,
-    "errorInfo": ""
+    "correspondColumn": ""
   },
   "poFabETA": {
     "type": "string",
@@ -213,7 +213,7 @@ export const columnMeta = {
     "format": "date-time",
     "nullable": true,
     "visible": true,
-    "errorInfo": ""
+    "correspondColumn": ""
   },
   "forFabETA": {
     "type": "string",
@@ -221,7 +221,7 @@ export const columnMeta = {
     "format": "date-time",
     "nullable": true,
     "visible": true,
-    "errorInfo": ""
+    "correspondColumn": ""
   },
   "shipFabETA": {
     "type": "string",
@@ -229,7 +229,7 @@ export const columnMeta = {
     "format": "",
     "nullable": false,
     "visible": true,
-    "errorInfo": ""
+    "correspondColumn": ""
   },
   "estCutDate": {
     "type": "string",
@@ -237,7 +237,7 @@ export const columnMeta = {
     "format": "",
     "nullable": true,
     "visible": true,
-    "errorInfo": "cutError"
+    "correspondColumn": "cutError"
   },
   "cutError": {
     "type": "string",
@@ -245,7 +245,7 @@ export const columnMeta = {
     "format": "date-time",
     "nullable": false,
     "visible": false,
-    "errorInfo": ""
+    "correspondColumn": ""
   },
   "actCutDate": {
     "type": "string",
@@ -253,7 +253,7 @@ export const columnMeta = {
     "format": "date-time",
     "nullable": true,
     "visible": true,
-    "errorInfo": ""
+    "correspondColumn": ""
   },
   "schRemarks": {
     "type": "string",
@@ -261,7 +261,7 @@ export const columnMeta = {
     "format": "",
     "nullable": false,
     "visible": true,
-    "errorInfo": ""
+    "correspondColumn": ""
   },
   "accBom": {
     "type": "string",
@@ -269,7 +269,7 @@ export const columnMeta = {
     "format": "",
     "nullable": false,
     "visible": true,
-    "errorInfo": ""
+    "correspondColumn": ""
   },
   "bomAccDayMin": {
     "type": "string",
@@ -277,7 +277,7 @@ export const columnMeta = {
     "format": "date-time",
     "nullable": true,
     "visible": true,
-    "errorInfo": ""
+    "correspondColumn": ""
   },
   "bomAccDayMax": {
     "type": "string",
@@ -285,7 +285,7 @@ export const columnMeta = {
     "format": "date-time",
     "nullable": true,
     "visible": true,
-    "errorInfo": "bomAccError"
+    "correspondColumn": "bomAccError"
   },
   "bomAccError": {
     "type": "string",
@@ -293,7 +293,7 @@ export const columnMeta = {
     "format": "",
     "nullable": false,
     "visible": false,
-    "errorInfo": ""
+    "correspondColumn": ""
   },
   "poAccDate": {
     "type": "string",
@@ -301,7 +301,7 @@ export const columnMeta = {
     "format": "date-time",
     "nullable": true,
     "visible": true,
-    "errorInfo": ""
+    "correspondColumn": ""
   },
   "poAccPromiseDate": {
     "type": "string",
@@ -309,7 +309,7 @@ export const columnMeta = {
     "format": "date-time",
     "nullable": true,
     "visible": true,
-    "errorInfo": ""
+    "correspondColumn": ""
   },
   "poAccComments": {
     "type": "string",
@@ -317,7 +317,7 @@ export const columnMeta = {
     "format": "",
     "nullable": false,
     "visible": true,
-    "errorInfo": ""
+    "correspondColumn": ""
   },
   "poAccETA": {
     "type": "string",
@@ -325,7 +325,7 @@ export const columnMeta = {
     "format": "date-time",
     "nullable": true,
     "visible": true,
-    "errorInfo": ""
+    "correspondColumn": ""
   },
   "forAccETA": {
     "type": "string",
@@ -333,7 +333,7 @@ export const columnMeta = {
     "format": "date-time",
     "nullable": true,
     "visible": true,
-    "errorInfo": ""
+    "correspondColumn": ""
   },
   "shipAccETA": {
     "type": "string",
@@ -341,7 +341,7 @@ export const columnMeta = {
     "format": "",
     "nullable": false,
     "visible": true,
-    "errorInfo": "shipAccETAError"
+    "correspondColumn": "shipAccETAError"
   },
   "shipAccETAError": {
     "type": "string",
@@ -349,7 +349,7 @@ export const columnMeta = {
     "format": "",
     "nullable": false,
     "visible": false,
-    "errorInfo": ""
+    "correspondColumn": ""
   },
   "prodQty": {
     "type": "number",
@@ -357,7 +357,7 @@ export const columnMeta = {
     "format": "",
     "nullable": false,
     "visible": true,
-    "errorInfo": ""
+    "correspondColumn": ""
   },
   "subQty": {
     "type": "number",
@@ -365,7 +365,7 @@ export const columnMeta = {
     "format": "",
     "nullable": false,
     "visible": true,
-    "errorInfo": ""
+    "correspondColumn": ""
   },
   "a100": {
     "type": "number",
@@ -373,7 +373,7 @@ export const columnMeta = {
     "format": "",
     "nullable": false,
     "visible": true,
-    "errorInfo": ""
+    "correspondColumn": ""
   },
   "b100": {
     "type": "number",
@@ -381,7 +381,7 @@ export const columnMeta = {
     "format": "",
     "nullable": false,
     "visible": true,
-    "errorInfo": ""
+    "correspondColumn": ""
   },
   "e100": {
     "type": "number",
@@ -389,7 +389,7 @@ export const columnMeta = {
     "format": "",
     "nullable": false,
     "visible": true,
-    "errorInfo": ""
+    "correspondColumn": ""
   },
   "f100": {
     "type": "number",
@@ -397,7 +397,7 @@ export const columnMeta = {
     "format": "",
     "nullable": false,
     "visible": true,
-    "errorInfo": ""
+    "correspondColumn": ""
   },
   "g100": {
     "type": "number",
@@ -405,7 +405,7 @@ export const columnMeta = {
     "format": "",
     "nullable": false,
     "visible": true,
-    "errorInfo": ""
+    "correspondColumn": ""
   },
   "inQty": {
     "type": "number",
@@ -413,7 +413,7 @@ export const columnMeta = {
     "format": "",
     "nullable": false,
     "visible": true,
-    "errorInfo": ""
+    "correspondColumn": ""
   },
   "estFirstOutputDate": {
     "type": "string",
@@ -421,7 +421,7 @@ export const columnMeta = {
     "format": "date-time",
     "nullable": true,
     "visible": true,
-    "errorInfo": ""
+    "correspondColumn": ""
   },
   "estSewingOffDate": {
     "type": "string",
@@ -429,7 +429,7 @@ export const columnMeta = {
     "format": "date-time",
     "nullable": true,
     "visible": true,
-    "errorInfo": "estSewingOffDateError"
+    "correspondColumn": "estSewingOffDateError"
   },
   "estSewingOffDateError": {
     "type": "string",
@@ -437,7 +437,7 @@ export const columnMeta = {
     "format": "",
     "nullable": false,
     "visible": false,
-    "errorInfo": ""
+    "correspondColumn": ""
   },
   "inDate": {
     "type": "string",
@@ -445,7 +445,7 @@ export const columnMeta = {
     "format": "date-time",
     "nullable": true,
     "visible": true,
-    "errorInfo": ""
+    "correspondColumn": ""
   },
   "shipDate": {
     "type": "string",
@@ -453,6 +453,6 @@ export const columnMeta = {
     "format": "date-time",
     "nullable": true,
     "visible": true,
-    "errorInfo": ""
+    "correspondColumn": ""
   }
 } as const;
