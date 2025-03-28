@@ -1,3 +1,11 @@
+export enum filterType {
+  text,
+  select,
+  textSelect,
+  numberRange,
+  dateRange,
+}
+
 export const columnMeta = {
   "department": {
     "type": "string",
@@ -5,7 +13,8 @@ export const columnMeta = {
     "format": "",
     "nullable": false,
     "visible": true,
-    "correspondColumn": ""
+    "correspondColumn": "",
+    "filterType": filterType.textSelect
   },
   "facName": {
     "type": "string",
@@ -13,7 +22,8 @@ export const columnMeta = {
     "format": "",
     "nullable": false,
     "visible": true,
-    "correspondColumn": ""
+    "correspondColumn": "",
+    "filterType": filterType.textSelect
   },
   "realCustID_c": {
     "type": "string",
@@ -21,7 +31,8 @@ export const columnMeta = {
     "format": "",
     "nullable": false,
     "visible": true,
-    "correspondColumn": ""
+    "correspondColumn": "",
+    "filterType": filterType.textSelect
   },
   "mpO_c": {
     "type": "string",
@@ -29,7 +40,8 @@ export const columnMeta = {
     "format": "",
     "nullable": false,
     "visible": true,
-    "correspondColumn": ""
+    "correspondColumn": "",
+    "filterType": filterType.text
   },
   "orderNum": {
     "type": "number",
@@ -37,7 +49,8 @@ export const columnMeta = {
     "format": "",
     "nullable": false,
     "visible": true,
-    "correspondColumn": ""
+    "correspondColumn": "",
+    "filterType": filterType.numberRange
   },
   "styleNumber_c": {
     "type": "string",
@@ -45,7 +58,8 @@ export const columnMeta = {
     "format": "",
     "nullable": false,
     "visible": true,
-    "correspondColumn": ""
+    "correspondColumn": "",
+    "filterType": filterType.text
   },
   "orderDate": {
     "type": "string",
@@ -53,7 +67,8 @@ export const columnMeta = {
     "format": "date-time",
     "nullable": true,
     "visible": true,
-    "correspondColumn": ""
+    "correspondColumn": "",
+    "filterType": filterType.dateRange
   },
   "requestDate": {
     "type": "string",
@@ -61,7 +76,8 @@ export const columnMeta = {
     "format": "date-time",
     "nullable": true,
     "visible": true,
-    "correspondColumn": ""
+    "correspondColumn": "",
+    "filterType": filterType.dateRange
   },
   "buyInfo_c": {
     "type": "string",
@@ -69,7 +85,8 @@ export const columnMeta = {
     "format": "",
     "nullable": false,
     "visible": true,
-    "correspondColumn": ""
+    "correspondColumn": "",
+    "filterType": filterType.text
   },
   "ordSaleQty": {
     "type": "number",
@@ -77,7 +94,8 @@ export const columnMeta = {
     "format": "",
     "nullable": false,
     "visible": true,
-    "correspondColumn": ""
+    "correspondColumn": "",
+    "filterType": filterType.numberRange
   },
   "orderPrice": {
     "type": "string",
@@ -85,7 +103,8 @@ export const columnMeta = {
     "format": "",
     "nullable": false,
     "visible": true,
-    "correspondColumn": ""
+    "correspondColumn": "",
+    "filterType": filterType.select
   },
   "bomFab": {
     "type": "string",
@@ -93,7 +112,8 @@ export const columnMeta = {
     "format": "",
     "nullable": false,
     "visible": true,
-    "correspondColumn": ""
+    "correspondColumn": "",
+    "filterType": filterType.select
   },
   "bomFabDayMin": {
     "type": "string",
@@ -101,7 +121,8 @@ export const columnMeta = {
     "format": "date-time",
     "nullable": true,
     "visible": true,
-    "correspondColumn": ""
+    "correspondColumn": "",
+    "filterType": filterType.dateRange
   },
   "bomFabDayMax": {
     "type": "string",
@@ -109,7 +130,8 @@ export const columnMeta = {
     "format": "date-time",
     "nullable": true,
     "visible": true,
-    "correspondColumn": "bomFabError"
+    "correspondColumn": "bomFabError",
+    "filterType": filterType.dateRange
   },
   "bomFabError": {
     "type": "string",
@@ -117,7 +139,8 @@ export const columnMeta = {
     "format": "date-time",
     "nullable": false,
     "visible": false,
-    "correspondColumn": ""
+    "correspondColumn": "",
+    "filterType": null
   },
   "ordMarkCreateDate": {
     "type": "string",
@@ -125,7 +148,8 @@ export const columnMeta = {
     "format": "date-time",
     "nullable": true,
     "visible": true,
-    "correspondColumn": ""
+    "correspondColumn": "",
+    "filterType": filterType.dateRange
   },
   "poFabDate": {
     "type": "string",
@@ -133,7 +157,8 @@ export const columnMeta = {
     "format": "date-time",
     "nullable": true,
     "visible": true,
-    "correspondColumn": ""
+    "correspondColumn": "",
+    "filterType": filterType.dateRange
   },
   "poFabPromiseDate": {
     "type": "string",
@@ -141,7 +166,8 @@ export const columnMeta = {
     "format": "date-time",
     "nullable": true,
     "visible": true,
-    "correspondColumn": ""
+    "correspondColumn": "",
+    "filterType": filterType.dateRange
   },
   "poFabComments": {
     "type": "string",
@@ -149,7 +175,8 @@ export const columnMeta = {
     "format": "",
     "nullable": false,
     "visible": true,
-    "correspondColumn": ""
+    "correspondColumn": "",
+    "filterType": filterType.text
   },
   "ordSugQty": {
     "type": "number",
@@ -157,7 +184,8 @@ export const columnMeta = {
     "format": "",
     "nullable": false,
     "visible": true,
-    "correspondColumn": ""
+    "correspondColumn": "",
+    "filterType": filterType.numberRange
   },
   "poFabQty": {
     "type": "number",
@@ -165,7 +193,8 @@ export const columnMeta = {
     "format": "",
     "nullable": false,
     "visible": true,
-    "correspondColumn": ""
+    "correspondColumn": "",
+    "filterType": filterType.numberRange
   },
   "tranFabQty": {
     "type": "number",
@@ -173,23 +202,26 @@ export const columnMeta = {
     "format": "",
     "nullable": false,
     "visible": true,
-    "correspondColumn": ""
+    "correspondColumn": "",
+    "filterType": filterType.numberRange
   },
   "poRate": {
     "type": "number",
     "description": "主料採購率",
     "format": "",
     "nullable": true,
-    "visible": false,
-    "correspondColumn": ""
+    "visible": true,
+    "correspondColumn": "",
+    "filterType": filterType.numberRange
   },
   "poRcvItem": {
     "type": "string",
     "description": "主料到料項次比例",
     "format": "",
     "nullable": false,
-    "visible": true,
-    "correspondColumn": ""
+    "visible": false,
+    "correspondColumn": "",
+    "filterType": filterType.select
   },
   "rcvFabQty": {
     "type": "number",
@@ -197,7 +229,8 @@ export const columnMeta = {
     "format": "",
     "nullable": false,
     "visible": true,
-    "correspondColumn": ""
+    "correspondColumn": "",
+    "filterType": filterType.numberRange
   },
   "rcvFabRate": {
     "type": "number",
@@ -205,7 +238,8 @@ export const columnMeta = {
     "format": "",
     "nullable": true,
     "visible": true,
-    "correspondColumn": ""
+    "correspondColumn": "",
+    "filterType": filterType.numberRange
   },
   "poFabETA": {
     "type": "string",
@@ -213,7 +247,8 @@ export const columnMeta = {
     "format": "date-time",
     "nullable": true,
     "visible": true,
-    "correspondColumn": ""
+    "correspondColumn": "",
+    "filterType": filterType.dateRange
   },
   "forFabETA": {
     "type": "string",
@@ -221,7 +256,8 @@ export const columnMeta = {
     "format": "date-time",
     "nullable": true,
     "visible": true,
-    "correspondColumn": ""
+    "correspondColumn": "",
+    "filterType": filterType.dateRange
   },
   "shipFabETA": {
     "type": "string",
@@ -229,15 +265,17 @@ export const columnMeta = {
     "format": "",
     "nullable": false,
     "visible": true,
-    "correspondColumn": ""
+    "correspondColumn": "",
+    "filterType": filterType.text
   },
   "estCutDate": {
     "type": "string",
     "description": "預計開裁日",
-    "format": "",
+    "format": "date-time",
     "nullable": true,
     "visible": true,
-    "correspondColumn": "cutError"
+    "correspondColumn": "cutError",
+    "filterType": filterType.dateRange
   },
   "cutError": {
     "type": "string",
@@ -245,7 +283,8 @@ export const columnMeta = {
     "format": "date-time",
     "nullable": false,
     "visible": false,
-    "correspondColumn": ""
+    "correspondColumn": "",
+    "filterType": null
   },
   "actCutDate": {
     "type": "string",
@@ -253,7 +292,8 @@ export const columnMeta = {
     "format": "date-time",
     "nullable": true,
     "visible": true,
-    "correspondColumn": ""
+    "correspondColumn": "",
+    "filterType": filterType.dateRange
   },
   "schRemarks": {
     "type": "string",
@@ -261,7 +301,8 @@ export const columnMeta = {
     "format": "",
     "nullable": false,
     "visible": true,
-    "correspondColumn": ""
+    "correspondColumn": "",
+    "filterType": filterType.text
   },
   "accBom": {
     "type": "string",
@@ -269,7 +310,8 @@ export const columnMeta = {
     "format": "",
     "nullable": false,
     "visible": true,
-    "correspondColumn": ""
+    "correspondColumn": "",
+    "filterType": filterType.select
   },
   "bomAccDayMin": {
     "type": "string",
@@ -277,7 +319,8 @@ export const columnMeta = {
     "format": "date-time",
     "nullable": true,
     "visible": true,
-    "correspondColumn": ""
+    "correspondColumn": "",
+    "filterType": filterType.dateRange
   },
   "bomAccDayMax": {
     "type": "string",
@@ -285,7 +328,8 @@ export const columnMeta = {
     "format": "date-time",
     "nullable": true,
     "visible": true,
-    "correspondColumn": "bomAccError"
+    "correspondColumn": "bomAccError",
+    "filterType": filterType.dateRange
   },
   "bomAccError": {
     "type": "string",
@@ -293,7 +337,8 @@ export const columnMeta = {
     "format": "",
     "nullable": false,
     "visible": false,
-    "correspondColumn": ""
+    "correspondColumn": "",
+    "filterType": null
   },
   "poAccDate": {
     "type": "string",
@@ -301,7 +346,8 @@ export const columnMeta = {
     "format": "date-time",
     "nullable": true,
     "visible": true,
-    "correspondColumn": ""
+    "correspondColumn": "",
+    "filterType": filterType.dateRange
   },
   "poAccPromiseDate": {
     "type": "string",
@@ -309,7 +355,8 @@ export const columnMeta = {
     "format": "date-time",
     "nullable": true,
     "visible": true,
-    "correspondColumn": ""
+    "correspondColumn": "",
+    "filterType": filterType.dateRange
   },
   "poAccComments": {
     "type": "string",
@@ -317,7 +364,8 @@ export const columnMeta = {
     "format": "",
     "nullable": false,
     "visible": true,
-    "correspondColumn": ""
+    "correspondColumn": "",
+    "filterType": filterType.text
   },
   "poAccETA": {
     "type": "string",
@@ -325,7 +373,8 @@ export const columnMeta = {
     "format": "date-time",
     "nullable": true,
     "visible": true,
-    "correspondColumn": ""
+    "correspondColumn": "",
+    "filterType": filterType.dateRange
   },
   "forAccETA": {
     "type": "string",
@@ -333,7 +382,8 @@ export const columnMeta = {
     "format": "date-time",
     "nullable": true,
     "visible": true,
-    "correspondColumn": ""
+    "correspondColumn": "",
+    "filterType": filterType.dateRange
   },
   "shipAccETA": {
     "type": "string",
@@ -341,7 +391,8 @@ export const columnMeta = {
     "format": "",
     "nullable": false,
     "visible": true,
-    "correspondColumn": "shipAccETAError"
+    "correspondColumn": "shipAccETAError",
+    "filterType": filterType.text
   },
   "shipAccETAError": {
     "type": "string",
@@ -349,7 +400,8 @@ export const columnMeta = {
     "format": "",
     "nullable": false,
     "visible": false,
-    "correspondColumn": ""
+    "correspondColumn": "",
+    "filterType": null
   },
   "prodQty": {
     "type": "number",
@@ -357,7 +409,8 @@ export const columnMeta = {
     "format": "",
     "nullable": false,
     "visible": true,
-    "correspondColumn": ""
+    "correspondColumn": "",
+    "filterType": filterType.numberRange
   },
   "subQty": {
     "type": "number",
@@ -365,7 +418,8 @@ export const columnMeta = {
     "format": "",
     "nullable": false,
     "visible": true,
-    "correspondColumn": ""
+    "correspondColumn": "",
+    "filterType": filterType.numberRange
   },
   "a100": {
     "type": "number",
@@ -373,7 +427,8 @@ export const columnMeta = {
     "format": "",
     "nullable": false,
     "visible": true,
-    "correspondColumn": ""
+    "correspondColumn": "",
+    "filterType": filterType.numberRange
   },
   "b100": {
     "type": "number",
@@ -381,7 +436,8 @@ export const columnMeta = {
     "format": "",
     "nullable": false,
     "visible": true,
-    "correspondColumn": ""
+    "correspondColumn": "",
+    "filterType": filterType.numberRange
   },
   "e100": {
     "type": "number",
@@ -389,7 +445,8 @@ export const columnMeta = {
     "format": "",
     "nullable": false,
     "visible": true,
-    "correspondColumn": ""
+    "correspondColumn": "",
+    "filterType": filterType.numberRange
   },
   "f100": {
     "type": "number",
@@ -397,7 +454,8 @@ export const columnMeta = {
     "format": "",
     "nullable": false,
     "visible": true,
-    "correspondColumn": ""
+    "correspondColumn": "",
+    "filterType": filterType.numberRange
   },
   "g100": {
     "type": "number",
@@ -405,7 +463,8 @@ export const columnMeta = {
     "format": "",
     "nullable": false,
     "visible": true,
-    "correspondColumn": ""
+    "correspondColumn": "",
+    "filterType": filterType.numberRange
   },
   "inQty": {
     "type": "number",
@@ -413,7 +472,8 @@ export const columnMeta = {
     "format": "",
     "nullable": false,
     "visible": true,
-    "correspondColumn": ""
+    "correspondColumn": "",
+    "filterType": filterType.numberRange
   },
   "estFirstOutputDate": {
     "type": "string",
@@ -421,7 +481,8 @@ export const columnMeta = {
     "format": "date-time",
     "nullable": true,
     "visible": true,
-    "correspondColumn": ""
+    "correspondColumn": "",
+    "filterType": filterType.dateRange
   },
   "estSewingOffDate": {
     "type": "string",
@@ -429,7 +490,8 @@ export const columnMeta = {
     "format": "date-time",
     "nullable": true,
     "visible": true,
-    "correspondColumn": "estSewingOffDateError"
+    "correspondColumn": "estSewingOffDateError",
+    "filterType": filterType.dateRange
   },
   "estSewingOffDateError": {
     "type": "string",
@@ -437,7 +499,8 @@ export const columnMeta = {
     "format": "",
     "nullable": false,
     "visible": false,
-    "correspondColumn": ""
+    "correspondColumn": "",
+    "filterType": null
   },
   "inDate": {
     "type": "string",
@@ -445,7 +508,8 @@ export const columnMeta = {
     "format": "date-time",
     "nullable": true,
     "visible": true,
-    "correspondColumn": ""
+    "correspondColumn": "",
+    "filterType": filterType.dateRange
   },
   "shipDate": {
     "type": "string",
@@ -453,6 +517,7 @@ export const columnMeta = {
     "format": "date-time",
     "nullable": true,
     "visible": true,
-    "correspondColumn": ""
+    "correspondColumn": "",
+    "filterType": filterType.dateRange
   }
 } as const;
