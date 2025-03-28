@@ -64,7 +64,7 @@ export const SearchForm = memo(({ setSearchParams }: { setSearchParams: Dispatch
       return <>{option.code}｜{option.name}</>
     }
 
-    return props?.placeholder
+    return <>{props?.placeholder}</>
   }
 
   return (
@@ -80,9 +80,12 @@ export const SearchForm = memo(({ setSearchParams }: { setSearchParams: Dispatch
           maxDate={new Date()}
           minDate={pastYear}
           pt={{
+            root: {
+              className: "w-full lg:w-13rem"
+            },
             input: {
               root: {
-                className: "py-2 text-sm w-13rem"
+                className: "py-2 text-sm"
               }
             },
           }}
@@ -94,27 +97,39 @@ export const SearchForm = memo(({ setSearchParams }: { setSearchParams: Dispatch
           value={custID}
           filter
           showClear
+          showFilterClear
           onChange={handleCustId}
           options={custIDList}
           optionLabel="code"
           placeholder="選填"
           itemTemplate={custIDDropdownTemplate}
-          pt={{
-            input: {
-              className: "py-2 text-sm w-8rem"
-            },
-            trigger: {
-              style: {
-                width: "2.5rem"
-              }
-            },
-            clearIcon: {
-              style: {
-                right: "2.5rem"
-              }
-            }
-          }}
+          pt={dropdownPt}
         />
       </label>
     </form>)
 })
+
+const dropdownPt = {
+  root: {
+    className: "w-full lg:w-8rem"
+  },
+  input: {
+    className: "py-2 text-sm"
+  },
+  trigger: {
+    style: {
+      width: "2.5rem"
+    }
+  },
+  clearIcon: {
+    style: {
+      right: "2.3rem"
+    }
+  },
+  filterInput: {
+    className: "py-2 text-sm"
+  },
+  itemLabel: {
+    className: "text-sm"
+  }
+};
