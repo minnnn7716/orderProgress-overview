@@ -10,14 +10,13 @@ import { formatDate } from 'src/utilities/formatDate'
 export const TableCell = memo((
   cellCtx: CellContext<RowData, ColumnValueType<ColumnDefinition>>
 ) => {
-  const { meta } = cellCtx.column.columnDef;
-  const info = meta?.getInfo ?? '';
-  const key = meta?.getKey ?? '';
+  const { columnInfo, columnKey, getContentLength } = cellCtx.column.columnDef.meta ?? {};
+  const overrow = getContentLength ? getContentLength(cellCtx) : false;
 
   const rawValue = cellCtx.getValue();
   let content = rawValue;
 
-  if (info.format === 'date-time') {
+  if (columnInfo.format === 'date-time') {
     content = formatDate(String(content));
   }
 
@@ -25,18 +24,20 @@ export const TableCell = memo((
     content = ''
   }
 
-  if (key === 'rcvFabRate' || key === 'poRate') {
+  if (columnKey === 'rcvFabRate' || columnKey === 'poRate') {
     if (typeof rawValue === 'number') {
-      const rate = rawValue * 100;
+      const rate = (rawValue * 100);
 
       if (rate > 0) {
-        content = `${(rate * 100)}%`
+        content = `${((rate * 100).toFixed(2))}%`
       }
     }
   }
 
+  
+
   return (
-    <div data-overrow={meta?.getContentLength(cellCtx)}>
+    <div data-overrow={overrow}>
       {String(content)}
     </div>
   )

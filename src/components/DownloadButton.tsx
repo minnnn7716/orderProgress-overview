@@ -20,7 +20,7 @@ interface CustomButtonPassThroughMethodOptions extends ButtonPassThroughMethodOp
   }
 }
 
-export const DownloadButton = memo(({ searchParams }: { searchParams: apiProps }) => {
+export const DownloadButton = memo(({ searchParams, className }: { searchParams: apiProps, className: string }) => {
   const { data, isLoading, error } = useCheckOrderExcel(searchParams);
   const [isDlLoading, setIsDlLoading] = useState<boolean>(false);
 
@@ -44,7 +44,7 @@ export const DownloadButton = memo(({ searchParams }: { searchParams: apiProps }
       });
   }, [searchParams, setIsDlLoading]);
 
-  return (<>
+  return (<div className={className}>
     <Button
       outlined
       label='下載 Excel'
@@ -55,7 +55,7 @@ export const DownloadButton = memo(({ searchParams }: { searchParams: apiProps }
       onClick={handleClick}
       pt={buttonPt}
     />
-  </>)
+  </div>)
 });
 
 const ButtonIcon: React.ReactNode = (
@@ -69,7 +69,7 @@ const ButtonIcon: React.ReactNode = (
 
 const buttonPt = {
   root: ({ context }: CustomButtonPassThroughMethodOptions) => ({
-    className: 'py-0 px-3 w-8rem hover:bg-green-50',
+    className: 'h-auto lg:h-full py-2 lg:py-0 px-3 w-8rem hover:bg-green-50',
     style: context.disabled ? {
       color: '#3e3e3e',
       background: '#f4fcf7',
