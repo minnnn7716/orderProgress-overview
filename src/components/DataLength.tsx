@@ -1,5 +1,4 @@
 import { memo, ReactNode, useCallback } from 'react';
-import { classNames } from 'primereact/utils';
 
 // Components
 import { Button } from 'primereact/button';
@@ -7,6 +6,7 @@ import { Button } from 'primereact/button';
 // Type
 import { Table } from '@tanstack/react-table';
 import { RowData } from 'src/types/dataTypes';
+import { classNames } from 'primereact/utils';
 
 export type dataLengthProps = {
   columnLength: number;
@@ -14,8 +14,8 @@ export type dataLengthProps = {
   table: Table<RowData> | null
 }
 
-export const DataLength = memo(({ dataLengthProps }: { dataLengthProps: dataLengthProps}): ReactNode => {
-  const { columnLength, rowLength, table } = dataLengthProps
+export const DataLength = memo(({ dataLengthProps }: { dataLengthProps: dataLengthProps }): ReactNode => {
+  const { columnLength, rowLength, table } = dataLengthProps;
 
   const handelClearAllFilters = useCallback((table: Table<RowData>) => {
     table.setColumnFilters([]);
@@ -27,13 +27,20 @@ export const DataLength = memo(({ dataLengthProps }: { dataLengthProps: dataLeng
     return null
   }
 
-  return (<p className='m-0 flex'>
-    <span className='inline-block text-sm bg-bluegray-500 text-white py-1 px-3 border-round-2xl mr-2'>總共 {`${columnLength}`} 欄、{`${rowLength}`} 筆資料</span>
-    <span className={classNames(
-      'flex text-sm bg-yellow-300 py-0 pl-3 border-round-2xl transition-all transition-duration-200 transition-ease-in',
-      table.getState().columnFilters.length || Object.keys(table.getState().globalFilter).length ? 'opacity-100' : 'opacity-0'
+  const { columnFilters } = table.getState();
+  const hasActiveFilters = columnFilters.length > 0;
+
+  return (<div className='m-0 flex flex-column md:flex-row align-items-start'>
+    <p className='m-0 mr-2 mb-2 lg:mb-0 py-1 px-3 bg-bluegray-500 text-sm text-white border-round-2xl'>
+      總共 {columnLength} 欄、<span className='inline-block w-1rem text-center'>{rowLength}</span> 筆資料
+    </p>
+
+    <p className={classNames('flex m-0 py-0 pl-3 bg-yellow-300 text-sm border-round-2xl transition-all transition-duration-200 transition-ease-in',
+      hasActiveFilters ? 'opacity-100' : 'opacity-0'
     )}>
-      <span className='py-1 mr-2 inline-block'>篩選後共 <strong>{table.getFilteredRowModel().rows.length.toLocaleString()}</strong> 筆資料</span>
+      <span className='py-1 mr-2 inline-block'>
+        篩選後共 <strong>{table.getFilteredRowModel().rows.length.toLocaleString()}</strong> 筆資料
+      </span>
       <Button
         rounded
         severity="warning"
@@ -49,6 +56,8 @@ export const DataLength = memo(({ dataLengthProps }: { dataLengthProps: dataLeng
           }
         }}
       />
-    </span>
-  </p>)
+    </p>
+  </div>)
 })
+
+

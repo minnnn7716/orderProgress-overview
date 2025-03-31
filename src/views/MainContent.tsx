@@ -14,12 +14,14 @@ import { dataLengthProps } from 'src/components/DataLength';
 //#region Initial Data
 // 用於 useState 的 Initial Data
 const today = new Date();
-const pastYear = new Date(today.setFullYear(today.getFullYear() - 1));
+const pastYear = new Date(new Date().setFullYear(new Date().getFullYear() - 1));
+const initialDateRange = [pastYear, today];
 const initialDataLength: dataLengthProps = {
   columnLength: 0,
   rowLength: 0,
   table: null
 }
+
 // VirtualizedTable 的 Initial Data
 const initialTable = {
   sorting: [
@@ -32,16 +34,16 @@ const initialTable = {
 //#endregion
 
 export const MainContent = memo(() => {
-  const [searchParams, setSearchParams] = useState<apiProps>({ orderDate: [pastYear, new Date()] });
+  const [searchParams, setSearchParams] = useState<apiProps>({ orderDate: initialDateRange });
   const [dataLength, setDataLength] = useState<dataLengthProps>(initialDataLength);
   const { data, isLoading, isCaching, error, message } = useFetchData(searchParams);
 
   return (<>
-    <section className='flex align-items-center justify-content-between mt-1 mb-2'>
+    <section className='flex flex-column-reverse lg:flex-row align-items-start lg:align-items-center justify-content-between mt-1 mb-2'>
       <DataLength dataLengthProps={dataLength} />
-      <div className='flex column-gap-3'>
+      <div className='w-full lg:w-auto flex column-gap-3 flex-column md:flex-row mb-2 lg:mb-0 justify-content-between lg:justify-content-start'>
         <SearchForm setSearchParams={setSearchParams} />
-        <DownloadButton searchParams={searchParams} />
+        <DownloadButton searchParams={searchParams} className='hidden md:block align-content-end' />
       </div>
     </section>
     <VirtualizedTable

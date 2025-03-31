@@ -2,11 +2,11 @@ import { useState, useRef, useEffect, useMemo, memo } from 'react'
 import { useVirtualizer } from '@tanstack/react-virtual'
 
 // Configs
-import { columnMeta } from 'src/config/columnMeta'
+import { columnMeta, filterType } from 'src/config/columnMeta'
 
 // Components
 import { Tooltip } from 'primereact/tooltip';
-import { DebouncedInput } from 'src/components/Filter';
+import { StringFilter, NumberFilter, DateFilter } from 'src/components/Filter';
 import { TableStatus } from './components/TableStatus';
 
 // Tanstack
@@ -15,6 +15,9 @@ import {
   getCoreRowModel,
   getSortedRowModel,
   getFilteredRowModel,
+  getFacetedMinMaxValues,
+  getFacetedRowModel,
+  getFacetedUniqueValues,
   useReactTable,
 } from '@tanstack/react-table'
 
@@ -25,7 +28,6 @@ import { IVirtualizedTableProps } from './types';
 
 // utilities
 import { generateColumns } from './utilities/generateTable';
-import { fuzzyFilterFn, getColumnCanGlobalFilter } from './tableUtilities';
 import { useOrderCacheTime } from 'src/api/fetchData';
 import { formatDate } from 'src/utilities/formatDate';
 
@@ -61,16 +63,18 @@ export const VirtualizedTable = memo(({ error, message, isLoading, isCaching, ro
       globalFilter,
       columnVisibility: invisibleColumns
     },
+
     onColumnFiltersChange: setColumnFilters,
     onGlobalFilterChange: setGlobalFilter,
-    globalFilterFn: fuzzyFilterFn,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    getColumnCanGlobalFilter: getColumnCanGlobalFilter,
-    debugTable: true,
-    debugHeaders: true,
-    debugColumns: true,
+    getFacetedRowModel: getFacetedRowModel(),
+    getFacetedUniqueValues: getFacetedUniqueValues(),
+    getFacetedMinMaxValues: getFacetedMinMaxValues(),
+    // debugTable: true,
+    // debugHeaders: true,
+    // debugColumns: true,
     initialState,
   })
 
@@ -177,7 +181,7 @@ export const VirtualizedTable = memo(({ error, message, isLoading, isCaching, ro
                   ) : null}
                   {virtualColumns.map(vc => {
                     const header = headerGroup.headers[vc.index];
-                    const columnFilterValue = header.column.getFilterValue();
+                    const meta = header.column.columnDef.meta;
 
                     return (
                       <th
@@ -186,7 +190,7 @@ export const VirtualizedTable = memo(({ error, message, isLoading, isCaching, ro
                         style={{ width: 200 }}
                       >
                         <div
-                          className='flex align-items-center mb-2'
+                          className='flex align-items-center mb-2 cursor-pointer'
                           onClick={header.column.getToggleSortingHandler()}
                         >
                           {flexRender(
@@ -198,14 +202,16 @@ export const VirtualizedTable = memo(({ error, message, isLoading, isCaching, ro
                             desc: <i className="pi pi-sort-amount-up-alt ml-2" />,
                           }[header.column.getIsSorted() as string] ?? <i className="pi pi-sort-alt ml-2" />}
                         </div>
-                        {header.column.getCanFilter() ? (
-                          <DebouncedInput
-                            placeholder="搜尋"
-                            className="w-full border-none border-round-md p-2"
-                            value={columnFilterValue as string ?? ''}
-                            onChange={value => header.column.setFilterValue(value)}
-                          />
-                        ) : null}
+                        {
+                          header.column.getCanFilter()
+                            && (meta?.filterVariant === filterType.select || meta?.filterVariant === filterType.textSelect || meta?.filterVariant === filterType.text)
+                            ? <StringFilter column={header.column} />
+                            : header.column.getCanFilter() && meta?.filterVariant === filterType.numberRange
+                              ? <NumberFilter column={header.column} />
+                              : header.column.getCanFilter() && meta?.filterVariant === filterType.dateRange
+                                ? <DateFilter column={header.column} />
+                                : null
+                        }
                       </th>
                     )
                   })}
