@@ -9,13 +9,13 @@ import { Dispatch, SetStateAction } from "react"
 import { FormEvent, Nullable } from "primereact/ts-helpers";
 import { custIDList, custIDType } from "src/config/custIDList";
 
-import { apiProps } from "src/api/fetchData";
+import { ApiProps } from "src/features/order";
 
 const today = new Date();
 const pastYear = new Date(today.setFullYear(today.getFullYear() - 1));
 const initialDateRange = [pastYear, new Date()];
 
-export const SearchForm = memo(({ setSearchParams }: { setSearchParams: Dispatch<SetStateAction<apiProps>> }) => {
+export const SearchForm = memo(({ setSearchParams }: { setSearchParams: Dispatch<SetStateAction<ApiProps>> }) => {
   const [dateRange, setDateRange] = useState<Nullable<(Date | null)[]>>(initialDateRange);
   const [custID, setCustID] = useState<custIDType | null>(null);
 
@@ -68,7 +68,7 @@ export const SearchForm = memo(({ setSearchParams }: { setSearchParams: Dispatch
   }
 
   return (
-    <form className="flex column-gap-2">
+    <form className="flex column-gap-3">
       <label>
         <span className="mr-2 text-sm">下單日期</span>
         <Calendar
@@ -79,16 +79,7 @@ export const SearchForm = memo(({ setSearchParams }: { setSearchParams: Dispatch
           dateFormat="yy/mm/dd"
           maxDate={new Date()}
           minDate={pastYear}
-          pt={{
-            root: {
-              className: "w-full lg:w-13rem"
-            },
-            input: {
-              root: {
-                className: "py-2 text-sm"
-              }
-            },
-          }}
+          pt={calendarPt}
         />
       </label>
       <label>
@@ -109,21 +100,32 @@ export const SearchForm = memo(({ setSearchParams }: { setSearchParams: Dispatch
     </form>)
 })
 
-const dropdownPt = {
+const calendarPt = {
   root: {
-    className: "w-full lg:w-8rem"
+    className: "w-full lg:w-12rem"
   },
   input: {
-    className: "py-2 text-sm"
+    root: {
+      className: "py-2 text-sm"
+    }
+  },
+}
+
+const dropdownPt = {
+  root: {
+    className: "w-full lg:w-7rem"
+  },
+  input: {
+    className: "py-2 pr-1 text-sm"
   },
   trigger: {
     style: {
-      width: "2.5rem"
+      width: "2rem"
     }
   },
   clearIcon: {
     style: {
-      right: "2.3rem"
+      right: "2rem"
     }
   },
   filterInput: {

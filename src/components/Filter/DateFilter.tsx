@@ -1,4 +1,4 @@
-import { useState, memo, useCallback } from 'react'
+import { useState, useCallback, memo } from 'react'
 
 // Components
 import { Calendar } from 'primereact/calendar';
@@ -36,21 +36,23 @@ export const DateFilter = memo(({ column }: { column: Column<RowData, ColumnValu
         value={columnFilterValue as Nullable<(Date | null)[]>}
         onChange={handleChange}
         onClearButtonClick={handleClear}
-        pt={{
-          root: {
-            className: "w-full lg:w-13rem"
-          },
-          input: {
-            root: {
-              className: "text-center",
-              style: {
-                fontSize: '.85rem',
-                padding: '.55rem .2rem',
-              }
-            }
-          },
-        }}
+        pt={calendarPt}
       />
     )
     : <></>
 }, (oldProps, newProps) => oldProps.column.getFilterValue() !== newProps.column.getFilterValue());
+
+const calendarPt = {
+  root: {
+    className: "w-full lg:w-13rem"
+  },
+  input: {
+    root: {
+      className: "text-center",
+      style: {
+        fontSize: '.85rem',
+        padding: '.55rem .2rem',
+      }
+    }
+  },
+}
