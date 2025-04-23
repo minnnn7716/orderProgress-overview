@@ -1,44 +1,39 @@
-import { memo } from 'react'
+import { memo } from "react";
+import { flexRender } from "@tanstack/react-table";
+import { useOverflowTooltip } from "src/hooks/useOverflowTooltip";
 
 // Types
-import { CellContext } from '@tanstack/react-table'
-import { ColumnValueType, ColumnDefinition, RowData } from 'src/types/dataTypes';
+import { Cell } from "@tanstack/react-table";
+import { RowData } from "src/types/dataTypes";
 
-// Utilities
-import { formatDate } from 'src/utilities/formatDate'
+// Styles
+import style from 'src/components/VirtualizedTable/style.module.scss'
+import { classNames } from "primereact/utils";
 
 export const TableCell = memo((
-  cellCtx: CellContext<RowData, ColumnValueType<ColumnDefinition>>
-) => {
-  const { columnInfo, columnKey, getContentLength } = cellCtx.column.columnDef.meta ?? {};
-  const overrow = getContentLength ? getContentLength(cellCtx) : false;
+  {
+    cell,
+    styleProps
+  }: {
+    cell: Cell<RowData, unknown>,
+    styleProps: React.CSSProperties
+  }) => {
+  const { contentRef, headerRef, needsTooltip, tooltipContent, tooltipPosition, checkOverflow } = useOverflowTooltip();
 
-  const rawValue = cellCtx.getValue();
-  let content = rawValue;
-
-  if (columnInfo.format === 'date-time') {
-    content = formatDate(String(content));
-  }
-
-  if (rawValue == null) {
-    content = ''
-  }
-
-  if (columnKey === 'rcvFabRate' || columnKey === 'poRate') {
-    if (typeof rawValue === 'number') {
-      const rate = (rawValue * 100);
-
-      if (rate > 0) {
-        content = `${((rate * 100).toFixed(2))}%`
-      }
-    }
-  }
-
-  
-
-  return (
-    <div data-overrow={overrow}>
-      {String(content)}
+  return (<td style={styleProps} className="p-3">
+    <div
+      ref={headerRef}
+      className={classNames(style.overRowContainer, 'toolTip-target')}
+      data-pr-tooltip={needsTooltip ? tooltipContent : ''}
+      data-pr-position={tooltipPosition}
+      onMouseEnter={checkOverflow}
+    >
+      <p className="m-0" ref={contentRef}>
+        {flexRender(
+          cell.column.columnDef.cell,
+          cell.getContext()
+        )}
+      </p>
     </div>
-  )
+  </td>)
 })
