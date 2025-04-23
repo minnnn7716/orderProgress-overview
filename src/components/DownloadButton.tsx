@@ -1,15 +1,14 @@
-import { memo, useCallback, useState } from 'react';
-
-import { useCheckOrderExcel, fetchDownLoadExcel } from 'src/api/fetchData';
+import { memo, useCallback } from 'react';
+import { useCheckOrderExcel, useDownloadOrderExcel } from 'src/features/order';
 
 // Components
 import { Button, ButtonPassThroughMethodOptions } from 'primereact/button';
 
 // Types
-import { apiProps } from 'src/api/fetchData';
+import { ApiProps } from 'src/features/order/types';
 
-// Utilities
-import { formatDate } from 'src/utilities/formatDate';
+// Utils
+import { formatDate } from 'src/utils/formatDate';
 
 // Images
 import excelIcon from 'src/assets/icon-excel.svg';
@@ -20,29 +19,22 @@ interface CustomButtonPassThroughMethodOptions extends ButtonPassThroughMethodOp
   }
 }
 
-export const DownloadButton = memo(({ searchParams, className }: { searchParams: apiProps, className: string }) => {
+export const DownloadButton = memo(({ searchParams, className }: { searchParams: ApiProps, className: string }) => {
   const { data, isLoading, error } = useCheckOrderExcel(searchParams);
-  const [isDlLoading, setIsDlLoading] = useState<boolean>(false);
+  const { mutate: dlExcel, status } = useDownloadOrderExcel();
 
   const handleClick = useCallback(() => {
-    setIsDlLoading(true);
-
-    fetchDownLoadExcel(searchParams)
-      .then((res) => {
-        setIsDlLoading(false);
-        const url = window.URL.createObjectURL(new Blob([res]));
+    dlExcel(searchParams, {
+      onSuccess: (blob => {
+        const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
-  
         link.href = url;
         link.setAttribute('download', `產銷進度追蹤表-${formatDate(searchParams.orderDate[0]).replace(/\//g, '.')}-${formatDate(searchParams.orderDate[1]).replace(/\//g, '.')}.xlsx`);
-  
-        document.body.appendChild(link);
         link.click();
-  
-        document.body.removeChild(link);
-        window.URL.revokeObjectURL(url);
-      });
-  }, [searchParams, setIsDlLoading]);
+        URL.revokeObjectURL(url);
+      })
+    });
+  }, [dlExcel, searchParams]);
 
   return (<div className={className}>
     <Button
@@ -50,7 +42,7 @@ export const DownloadButton = memo(({ searchParams, className }: { searchParams:
       label='下載 Excel'
       severity="success"
       icon={ButtonIcon}
-      loading={isDlLoading}
+      loading={status === 'pending'}
       disabled={!data || error !== null || isLoading}
       onClick={handleClick}
       pt={buttonPt}

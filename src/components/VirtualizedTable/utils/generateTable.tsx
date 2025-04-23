@@ -1,6 +1,6 @@
 // Components
-import { TableHeader } from '../components/TableHeader'
-import { TableCell } from '../components/TableCell';
+import { TableHeader } from '../components/TableColumnContent'
+import { TableCellContent } from '../components/TableCellContent';
 
 // Tanstack
 import { createColumnHelper } from '@tanstack/react-table'
@@ -9,9 +9,9 @@ import { createColumnHelper } from '@tanstack/react-table'
 import { ColumnMeta, RowData } from 'src/types/dataTypes';
 
 // Utilities
-import { getRemindStyle } from 'src/components/VirtualizedTable/utilities/tableUtilities';
+import { getRemindStyle } from 'src/components/VirtualizedTable/utils/tableUtilities';
 import { filterType } from 'src/config/columnMeta';
-import { formatDate } from 'src/utilities/formatDate';
+import { formatDate } from 'src/utils/formatDate';
 
 export const generateColumns = (columnData: ColumnMeta) => {
   const columnHelper = createColumnHelper<RowData>();
@@ -21,19 +21,10 @@ export const generateColumns = (columnData: ColumnMeta) => {
       columnHelper.accessor((row) => row[key as keyof RowData], {
         id: key,
         header: TableHeader,
-        cell: TableCell,
+        cell: TableCellContent,
         enableHiding: info.visible,
+        size: 200,
         meta: {
-          getContentLength: (cellCtx) => {
-            const { type, format } = info;
-            const value = String(cellCtx.getValue());
-
-            if (type === 'string' && format !== 'date-time') {
-              return value.length > 11;
-            }
-
-            return false
-          },
           getRemindStyle: getRemindStyle,
           filterVariant: info.filterType,
           columnInfo: info,

@@ -1,25 +1,32 @@
 import { useState, memo } from 'react';
-import { useFetchData } from 'src/api/fetchData';
+import { useOrderData } from 'src/features/order';
 
 // Components
 import { VirtualizedTable } from 'src/components/VirtualizedTable';
 import { SearchForm } from 'src/components/SearchForm';
-import { DataLength } from 'src/components/DataLength';
+import { DataLength, dataLengthProps } from 'src/components/DataLength';
 import { DownloadButton } from 'src/components/DownloadButton';
+import { ClearAllPinButton, pinListProps } from 'src/components/ClearAllPinButton';
 
 // Types
-import { apiProps } from "src/api/fetchData";
-import { dataLengthProps } from 'src/components/DataLength';
+import { ApiProps } from "src/features/order/types";
+
 
 //#region Initial Data
 // 用於 useState 的 Initial Data
 const today = new Date();
 const pastYear = new Date(new Date().setFullYear(new Date().getFullYear() - 1));
 const initialDateRange = [pastYear, today];
+const initialPinList: pinListProps = {
+  hasPin: false,
+  table: null
+}
 const initialDataLength: dataLengthProps = {
   columnLength: 0,
   rowLength: 0,
-  table: null
+  isFilter: false,
+  filterRowLength: 0,
+  handelClearAllFilters: () => { }
 }
 
 // VirtualizedTable 的 Initial Data
@@ -34,14 +41,18 @@ const initialTable = {
 //#endregion
 
 export const MainContent = memo(() => {
-  const [searchParams, setSearchParams] = useState<apiProps>({ orderDate: initialDateRange });
+  const [searchParams, setSearchParams] = useState<ApiProps>({ orderDate: initialDateRange });
   const [dataLength, setDataLength] = useState<dataLengthProps>(initialDataLength);
-  const { data, isLoading, isCaching, error, message } = useFetchData(searchParams);
+  const [pinList, setPinList] = useState<pinListProps>(initialPinList);
+  const { orders, isLoading, isCaching, error, message } = useOrderData(searchParams);
 
   return (<>
-    <section className='flex flex-column-reverse lg:flex-row align-items-start lg:align-items-center justify-content-between mt-1 mb-2'>
-      <DataLength dataLengthProps={dataLength} />
-      <div className='w-full lg:w-auto flex column-gap-3 flex-column md:flex-row mb-2 lg:mb-0 justify-content-between lg:justify-content-start'>
+    <section className='flex flex-column-reverse xl:flex-row align-items-start xl:align-items-center justify-content-between mt-1 mb-3'>
+      <div className='flex column-gap-2'>
+        <DataLength dataLengthProps={dataLength} />
+        <ClearAllPinButton pinListProps={pinList} />
+      </div>
+      <div className='w-full xl:w-auto flex column-gap-3 flex-column md:flex-row mb-2 xl:mb-0 justify-content-between xl:justify-content-start'>
         <SearchForm setSearchParams={setSearchParams} />
         <DownloadButton searchParams={searchParams} className='hidden md:block align-content-end' />
       </div>
@@ -51,9 +62,10 @@ export const MainContent = memo(() => {
       message={message}
       isLoading={isLoading}
       isCaching={isCaching}
-      rowData={data}
+      rowData={orders}
       initialState={initialTable}
       setDataLength={setDataLength}
+      setPinList={setPinList}
     />
   </>)
 })

@@ -131,7 +131,6 @@ export const DebouncedInput = memo(({
   return oldProps.value === newProps.value
 })
 
-
 const dropdownPt = {
   root: {
     className: "w-full"
@@ -146,7 +145,7 @@ const dropdownPt = {
   },
   clearIcon: {
     style: {
-      right: "2.5rem",
+      right: "2rem",
     }
   },
   filterInput: {
