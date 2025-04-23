@@ -1,169 +1,100 @@
-import { useState, useRef, useEffect, useMemo, memo } from 'react'
-import { useVirtualizer } from '@tanstack/react-virtual'
+import { useRef, useEffect, memo } from 'react'
+import { useVirtualizedTable } from './hooks/useVirtualizedTable';
 
 // Configs
-import { columnMeta, filterType } from 'src/config/columnMeta'
+import { columnMeta } from 'src/config/columnMeta'
 
 // Components
 import { Tooltip } from 'primereact/tooltip';
-import { StringFilter, NumberFilter, DateFilter } from 'src/components/Filter';
 import { TableStatus } from './components/TableStatus';
-
-// Tanstack
-import {
-  flexRender,
-  getCoreRowModel,
-  getSortedRowModel,
-  getFilteredRowModel,
-  getFacetedMinMaxValues,
-  getFacetedRowModel,
-  getFacetedUniqueValues,
-  useReactTable,
-} from '@tanstack/react-table'
+import { TableColumn } from './components/TableColumn';
+import { TableCell } from './components/TableCell';
+import { CacheTime } from './components/CacheTime';
 
 // Types
-import { Row, ColumnFiltersState } from '@tanstack/react-table'
+import { Row } from '@tanstack/react-table'
 import { RowData } from 'src/types/dataTypes';
 import { IVirtualizedTableProps } from './types';
 
-// utilities
-import { generateColumns } from './utilities/generateTable';
-import { useOrderCacheTime } from 'src/api/fetchData';
-import { formatDate } from 'src/utilities/formatDate';
+// Utils
+import { getCommonPinningStyles, getColumnWidth } from './utils/tableUtilities';
 
-// style
-import style from './style.module.scss'
-import { classNames } from 'primereact/utils';
+// Style
+import style from './style.module.scss';
 
-export const VirtualizedTable = memo(({ error, message, isLoading, isCaching, rowData, initialState, setDataLength }: IVirtualizedTableProps) => {
-  const { data: cacheTimeData } = useOrderCacheTime();
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-  const [globalFilter, setGlobalFilter] = useState('')
-
-  const tableContainerRef = useRef<HTMLDivElement>(null)
+export const VirtualizedTable = memo(({
+  error,
+  message,
+  isLoading,
+  isCaching,
+  rowData,
+  initialState,
+  setDataLength,
+  setPinList
+}: IVirtualizedTableProps) => {
+  const tableContainerRef = useRef<HTMLDivElement>(null);
   const tooltipRef = useRef<Tooltip>(null);
 
-  const invisibleColumns = useMemo<Record<string, boolean>>(() => (
-    Object.fromEntries(
-      Object.entries(columnMeta)
-        .filter(([, info]) => !info.visible)
-        .map(([key]) => [key, false])
-    )
-  ), [])
-
-  //#region Table
-  const columns = useMemo(() => generateColumns(columnMeta), [])
-
-  const table = useReactTable({
+  const {
+    table,
+    rows,
+    centerColumns,
+    leftColumns,
+    columnSizing,
+    rowVirtualizer,
+    virtualColumns,
+    virtualRows,
+    virtualItems,
+    virtualPaddingRight,
+    virtualPaddingLeft,
+    visibleColumns,
+  } = useVirtualizedTable({
     data: rowData,
-    columns,
-    filterFns: {},
-    state: {
-      columnFilters,
-      globalFilter,
-      columnVisibility: invisibleColumns
-    },
-
-    onColumnFiltersChange: setColumnFilters,
-    onGlobalFilterChange: setGlobalFilter,
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getFacetedRowModel: getFacetedRowModel(),
-    getFacetedUniqueValues: getFacetedUniqueValues(),
-    getFacetedMinMaxValues: getFacetedMinMaxValues(),
-    // debugTable: true,
-    // debugHeaders: true,
-    // debugColumns: true,
+    columnMeta,
     initialState,
-  })
+    tableContainerRef
+  });
 
-  const { rows } = table.getRowModel()
-  const visibleColumns = table.getVisibleLeafColumns()
-  //#endregion
-
-  //#region Virtualizer
-  const columnVirtualizer = useVirtualizer({
-    count: visibleColumns.length,
-    estimateSize: index => visibleColumns[index].getSize(),
-    getScrollElement: () => tableContainerRef.current,
-    horizontal: true,
-    overscan: 3,
-  })
-
-  const rowVirtualizer = useVirtualizer({
-    count: rows.length,
-    estimateSize: () => 0,
-    getScrollElement: () => tableContainerRef.current,
-    measureElement:
-      typeof window !== 'undefined' &&
-        navigator.userAgent.indexOf('Firefox') === -1
-        ? element => element?.getBoundingClientRect().height
-        : undefined,
-    overscan: 5,
-  })
-
-  const virtualColumns = columnVirtualizer.getVirtualItems()
-  const virtualRows = rowVirtualizer.getVirtualItems()
-
-  let virtualPaddingLeft: number | undefined
-  let virtualPaddingRight: number | undefined
-
-  if (columnVirtualizer && virtualColumns?.length) {
-    virtualPaddingLeft = virtualColumns[0]?.start ?? 0
-    virtualPaddingRight =
-      columnVirtualizer.getTotalSize() -
-      (virtualColumns[virtualColumns.length - 1]?.end ?? 0)
-  }
-  //#endregion
+  //#region useEffect
+  const { length: leftPinnedColumnsLength } = table.getState().columnPinning.left || [];
+  const { length: columnSizingLength } = Object.keys(columnSizing) || [];
 
   useEffect(() => {
     if (tooltipRef.current) {
       tooltipRef.current.updateTargetEvents();
     }
-  }, [virtualColumns])
+  }, [virtualColumns, virtualRows, columnSizingLength, leftPinnedColumnsLength])
 
   useEffect(() => {
     setDataLength({
       columnLength: visibleColumns.length,
-      rowLength: rows.length,
-      table
+      rowLength: table.getCoreRowModel().rows.length,
+      isFilter: table.getState().columnFilters.length > 0,
+      filterRowLength: table.getFilteredRowModel().rows.length,
+      handelClearAllFilters: () => {
+        table.setColumnFilters([]);
+        table.setGlobalFilter('');
+        table.resetColumnFilters();
+      }
     })
   }, [setDataLength, visibleColumns.length, rows.length, table])
 
+  useEffect(() => {
+    setPinList({
+      hasPin: leftPinnedColumnsLength > 0,
+      table
+    })
+  }, [leftPinnedColumnsLength, setPinList, table])
+  //#endregion
+
   return (
     <>
-      <Tooltip ref={tooltipRef} target=".toolTip-target" />
-      {/* <Fieldset legend="篩選訂單" toggleable>
-        <div className='mb-2 flex align-items-center justify-content-between'>
-          <div className='flex'>
-            <DebouncedInput
-              placeholder="搜尋全部"
-              className="border-none border-round-md p-2 ml-2 shadow-1"
-              value={globalFilter ?? ''}
-              onChange={value => setGlobalFilter(String(value))}
-            />
-            <button
-              className='bg-primary hover:bg-primary-600 font-medium border-none border-round-md ml-2 px-3 transition-colors transition-duration-100 transition-ease-in'
-              onClick={() => {
-                setColumnFilters([])
-                setGlobalFilter('')
-                table.resetColumnFilters();
-              }}
-            >
-              清除所有篩選
-            </button>
-          </div>
-        </div >
-        <p className="m-0">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-          Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-          consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-          Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-        </p>
-      </Fieldset> */}
+      {/* Tooltip 用於顯示過長的 column 標題，Hover 顯示全名 */}
+      <Tooltip ref={tooltipRef} target=".toolTip-target" className='text-sm' />
 
+      {/* Table 主體 */}
       <div className={style.tableWrap}>
+        {/* TableStatus 顯示 Table 資料取得狀態 */}
         <TableStatus
           tableLength={table.getFilteredRowModel().rows.length}
           error={error}
@@ -176,99 +107,111 @@ export const VirtualizedTable = memo(({ error, message, isLoading, isCaching, ro
             <thead className={style.thead}>
               {table.getHeaderGroups().map(headerGroup => (
                 <tr key={headerGroup.id}>
+
+                  {/* 渲染左側釘選的 Columns，沒有使用 Virtualize */}
+                  {leftColumns.map(column => {
+                    const header = headerGroup.headers.find(h => h.column.id === column.id);
+                    if (!header) return null;
+
+                    return <TableColumn
+                      key={header.id}
+                      header={header}
+                      column={column}
+                      styleProps={{
+                        ...getCommonPinningStyles(table, columnSizing, column, leftColumns),
+                        width: getColumnWidth(columnSizing[column.id])
+                      }}
+                    />
+                  })}
+
+                  {/* 渲染其餘沒有釘選的 Columns，使用 Virtualize */}
                   {virtualPaddingLeft ? (
                     <th style={{ width: virtualPaddingLeft }} />
                   ) : null}
-                  {virtualColumns.map(vc => {
-                    const header = headerGroup.headers[vc.index];
-                    const meta = header.column.columnDef.meta;
 
-                    return (
-                      <th
-                        key={header.id}
-                        className={classNames(header.column.getIsSorted() && style.sorted)}
-                        style={{ width: 200 }}
-                      >
-                        <div
-                          className='flex align-items-center mb-2 cursor-pointer'
-                          onClick={header.column.getToggleSortingHandler()}
-                        >
-                          {flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                          {{
-                            asc: <i className="pi pi-sort-amount-down ml-2" />,
-                            desc: <i className="pi pi-sort-amount-up-alt ml-2" />,
-                          }[header.column.getIsSorted() as string] ?? <i className="pi pi-sort-alt ml-2" />}
-                        </div>
-                        {
-                          header.column.getCanFilter()
-                            && (meta?.filterVariant === filterType.select || meta?.filterVariant === filterType.textSelect || meta?.filterVariant === filterType.text)
-                            ? <StringFilter column={header.column} />
-                            : header.column.getCanFilter() && meta?.filterVariant === filterType.numberRange
-                              ? <NumberFilter column={header.column} />
-                              : header.column.getCanFilter() && meta?.filterVariant === filterType.dateRange
-                                ? <DateFilter column={header.column} />
-                                : null
-                        }
-                      </th>
-                    )
+                  {virtualItems.map(vc => {
+                    // 防止超出邊界
+                    if (vc.index >= centerColumns.length) return null;
+
+                    const column = centerColumns[vc.index];
+                    if (!column) return null;
+
+                    const header = headerGroup.headers.find(h => h.column.id === column.id);
+                    if (!header) return null;
+
+                    return <TableColumn
+                      key={header.id}
+                      header={header}
+                      column={column}
+                      styleProps={{ width: columnSizing[column.id] === undefined ? 200 : Math.max(columnSizing[column.id], 150) }}
+                    />
                   })}
+
                   {virtualPaddingRight ? (
                     <th style={{ width: virtualPaddingRight }} />
                   ) : null}
+
                 </tr>
               ))}
             </thead>
             <tbody
               className={style.tbody}
-              style={{
-                height: rowVirtualizer ? `${rowVirtualizer.getTotalSize()}px` : 'auto',
-              }}
+              style={{ height: rowVirtualizer ? `${rowVirtualizer.getTotalSize()}px` : 'auto' }}
             >
               {
                 virtualRows.map(virtualRow => {
                   const row = rows[virtualRow.index] as Row<RowData>
-                  const visibleCells = row.getVisibleCells()
 
                   return (
                     <tr
                       data-index={virtualRow.index}
                       ref={node => rowVirtualizer.measureElement(node)}
                       key={row.id}
-                      style={{
-                        transform: `translateY(${virtualRow.start}px)`,
-                      }}
+                      style={{ transform: `translateY(${virtualRow.start}px)` }}
                     >
-                      {virtualPaddingLeft ? (
-                        <td
-                          style={{ width: virtualPaddingLeft }}
-                        />
-                      ) : null}
-                      {virtualColumns.map(vc => {
-                        const cell = visibleCells[vc.index];
+                      {/* 渲染左側釘選的 Row 跟 Cell */}
+                      {row.getLeftVisibleCells().map(cell => {
                         const cellMeta = cell.column.columnDef.meta;
+                        const remindStyle = cellMeta?.getRemindStyle?.(cell.getContext());
 
-                        return (
-                          <td
-                            key={cell.id}
-                            style={{
-                              width: 200,
-                              ...cellMeta?.getRemindStyle?.(cell.getContext())
-                            }}
-
-                          >
-                            {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext()
-                            )}
-                          </td>
-                        )
+                        return <TableCell
+                          key={cell.id}
+                          cell={cell}
+                          styleProps={{
+                            ...getCommonPinningStyles(table, columnSizing, cell.column, leftColumns),
+                            ...(remindStyle || {}),
+                            width: getColumnWidth(columnSizing[cell.column.id])
+                          }} />
                       })}
-                      {virtualPaddingRight ? (<td
-                        style={{ width: virtualPaddingRight }}
-                      />
+
+                      {/* 渲染其餘沒有釘選的 Row 跟 Cell */}
+                      {virtualPaddingLeft ? (
+                        <td style={{ width: virtualPaddingLeft }} />
+                      ) : null}
+
+                      {virtualItems.map(vc => {
+                        const column = centerColumns[vc.index];
+                        if (!column) return null;
+
+                        const centerCells = row.getCenterVisibleCells();
+                        const cell = centerCells.find(c => c.column.id === column.id);
+                        if (!cell) return null;
+
+                        const cellMeta = cell.column.columnDef.meta;
+                        const remindStyle = cellMeta?.getRemindStyle?.(cell.getContext());
+
+                        return <TableCell
+                          key={cell.id}
+                          cell={cell}
+                          styleProps={{
+                            ...getCommonPinningStyles(table, columnSizing, column, leftColumns),
+                            ...(remindStyle || {}),
+                            width: getColumnWidth(columnSizing[column.id])
+                          }}
+                        />;
+                      })}
+                      {virtualPaddingRight ? (
+                        <td style={{ width: virtualPaddingRight }} />
                       ) : null}
                     </tr>
                   )
@@ -278,16 +221,8 @@ export const VirtualizedTable = memo(({ error, message, isLoading, isCaching, ro
           </table>
         </div>
       </div>
-      <p className="mt-2 mr-1 mb-0 text-sm text-right">
-        資料時間： {formatDate(cacheTimeData, {
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit',
-          hour12: false,
-          hour: '2-digit',
-          minute: '2-digit',
-        })}
-      </p>
+
+      <CacheTime className='mt-2 mr-1 text-sm text-right' />
     </>
   )
 })

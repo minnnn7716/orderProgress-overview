@@ -2,6 +2,7 @@ import { Dispatch, SetStateAction } from 'react'
 import { RowData } from 'src/types/dataTypes'
 import { InitialTableState } from '@tanstack/react-table'
 import { dataLengthProps } from 'src/components/DataLength';
+import { pinListProps } from 'src/components/ClearAllPinButton';
 
 export interface IVirtualizedTableProps {
   isLoading: boolean;
@@ -11,4 +12,5 @@ export interface IVirtualizedTableProps {
   initialState?: InitialTableState;
   rowData: RowData[];
   setDataLength: Dispatch<SetStateAction<dataLengthProps>>;
+  setPinList: Dispatch<SetStateAction<pinListProps>>;
 }

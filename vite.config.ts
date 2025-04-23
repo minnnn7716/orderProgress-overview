@@ -11,11 +11,14 @@ export default defineConfig({
       },
     }),
   ],
-  // 符合 EIP 站台的路徑設定，建置時需開啟
-  // base: '/Content/React/Epicor/OrderProgress',
+  // 符合 EIP 站台的路徑設定
+  base: '/Content/React/Epicor/OrderProgress',
   resolve: {
     alias: {
       src: "/src"
     }
-  }
+  },
+  build: {
+    chunkSizeWarningLimit: 600,
+  },
 })
