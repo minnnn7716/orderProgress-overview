@@ -1,4 +1,28 @@
-import { useCallback, useRef, useState, useLayoutEffect, LegacyRef } from "react";
+/**
+ * @file useOverflowTooltip.tsx
+ * @description 內容溢出顯示 Tooltip Hook，用於檢測文字內容是否溢出並顯示 Tooltip
+ * @module hooks/useOverflowTooltip
+ * @returns {Object} 回傳用於處理內容溢出並顯示 Tooltip 的參考物件與狀態
+ */
+
+/**
+ * 型別定義
+ * useOverflowTooltip: 內容溢出顯示 Tooltip Hook
+ * @function useOverflowTooltip
+ * @param {('right'|'left')} [defaultPosition='right'] - Tooltip 的顯示位置
+ * @returns {OverflowTooltipResult} 內容溢出 Tooltip 控制物件
+ * 
+ * OverflowTooltipResult: 內容溢出顯示 Tooltip Hook 回傳值
+ * @typedef OverflowTooltipResult
+ * @property {LegacyRef<HTMLDivElement>} contentRef - 內容元素參考物件
+ * @property {LegacyRef<HTMLDivElement>} headerRef - 包含內容的容器元素參考物件
+ * @property {boolean} needsTooltip - 是否需要顯示 Tooltip
+ * @property {string} tooltipContent - Tooltip 顯示的文字內容
+ * @property {('right'|'left')} tooltipPosition - Tooltip 顯示的位置
+ * @property {function} checkOverflow - 手動檢查是否溢出的函式
+ */
+
+import { useState, useRef, useCallback, useLayoutEffect, LegacyRef } from "react";
 
 export const useOverflowTooltip = (defaultPosition: 'right' | 'left' = 'right'): {
   contentRef: LegacyRef<HTMLDivElement>,

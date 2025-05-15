@@ -1,4 +1,29 @@
-import { memo, useCallback } from 'react';
+/**
+ * @file DownloadButton.tsx
+ * @description Excel 下載按鈕元件，用於下載產銷進度追蹤表格式的 Excel 檔案
+ * @module components/DownloadButton
+ * @returns {React.ReactElement} 回傳可下載 Excel 檔案的按鈕元件
+ * @example
+ * <DownloadButton
+ *   searchParams={searchParams}
+ *   className="ml-3"
+ * />
+ */
+
+/**
+ * 型別定義
+ * DownloadButtonProps: Excel 下載按鈕元件傳入參數
+ * @typedef DownloadButtonProps
+ * @property {ApiProps} searchParams - API 查詢參數，包含訂單日期等過濾條件
+ * @property {string} className - 設定按鈕容器的 CSS 類別名稱
+ * 
+ * CustomButtonPassThroughMethodOptions: PrimeReact 按鈕樣式傳遞選項
+ * @typedef CustomButtonPassThroughMethodOptions
+ * @property {Object} context - 按鈕狀態上下文
+ * @property {boolean} context.disabled - 按鈕是否禁用
+ */
+
+import { useCallback, memo, type ReactNode } from 'react';
 import { useCheckOrderExcel, useDownloadOrderExcel } from 'src/features/order';
 
 // Components
@@ -19,7 +44,15 @@ interface CustomButtonPassThroughMethodOptions extends ButtonPassThroughMethodOp
   }
 }
 
-export const DownloadButton = memo(({ searchParams, className }: { searchParams: ApiProps, className: string }) => {
+type DownloadButtonProps = {
+  searchParams: ApiProps;
+  className: string;
+}
+
+export const DownloadButton = memo(({
+  searchParams,
+  className
+}: DownloadButtonProps) => {
   const { data, isLoading, error } = useCheckOrderExcel(searchParams);
   const { mutate: dlExcel, status } = useDownloadOrderExcel();
 
@@ -50,7 +83,7 @@ export const DownloadButton = memo(({ searchParams, className }: { searchParams:
   </div>)
 });
 
-const ButtonIcon: React.ReactNode = (
+const ButtonIcon: ReactNode = (
   <img
     src={excelIcon}
     alt="下載 Excel"

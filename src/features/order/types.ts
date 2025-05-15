@@ -2,13 +2,13 @@ import { RowData } from "src/types/dataTypes";
 
 export type ApiProps = {
   orderDate: Date[];
-  custID?: string
+  custId?: string
 }
 
 export type ApiParams = {
   orderDateFrom: string;
   orderDateTo: string;
-  custID?: string
+  custId?: string
 }
 
 export type ApiData = {

@@ -1,158 +1,61 @@
-import { useState, useEffect, memo, useMemo, useCallback } from 'react'
+/**
+ * @file StringFilter.tsx
+ * @description 文字篩選元件，用於表格 Column 中篩選字串內容
+ * @module components/Filter/StringFilter
+ * @returns {React.ReactElement} 回傳 PrimeReact 的 InputText 元件
+ * @example
+ * 傳入範例可見 src/components/VirtualizedTable/components/TableColumn.tsx
+ * <StringFilter
+ *   columnFilterValue={'搜尋文字'}
+ *   setFilterValue={setSearchText}
+ * />
+ */
+
+/**
+ * 型別定義
+ * StringFilterProps: 文字篩選器傳入參數
+ * @typedef StringFilterProps
+ * @property {string | undefined} columnFilterValue - 傳入目前已輸入的篩選文字，若無則會傳入 undefined
+ * @property {function} setFilterValue - 用於將新的篩選值設置到表格狀態的回呼函式
+ */
+
+import { useState, useEffect, useCallback, memo, type ChangeEvent } from 'react'
 
 // Components
-import { Dropdown, DropdownChangeEvent } from 'primereact/dropdown';
+import { InputText } from "primereact/inputtext";
 
-// Types
-import { Column } from '@tanstack/react-table'
-import { ColumnDefinition, ColumnValueType, RowData } from 'src/types/dataTypes'
-import { filterType } from 'src/config/columnMeta';
+export type StringFilterProps = {
+  columnFilterValue: string | undefined;
+  setFilterValue: (updater: string) => void;
+}
 
-// Styles
-import style from './style.module.scss';
-import { classNames } from 'primereact/utils';
-
-export const StringFilter = memo(({ column }: { column: Column<RowData, ColumnValueType<ColumnDefinition>> }) => {
-  const { filterVariant } = column.columnDef.meta ?? {};
-  const columnFilterValue = column.getFilterValue();
-
-  const { getFacetedUniqueValues, setFilterValue } = column;
-  const facetedUniqueKeys = Array.from(getFacetedUniqueValues().keys());
-
-  const sortedUniqueValues = useMemo(
-    () =>
-      filterVariant === filterType.select || filterVariant === filterType.textSelect
-        ? facetedUniqueKeys
-          .sort()
-          .slice(0, 500)
-        : []
-    , [facetedUniqueKeys, filterVariant])
-
-  const handleSetDropdownValue = useCallback((e: DropdownChangeEvent) => setFilterValue(e.value), [setFilterValue]);
-  const handleSetTextValue = useCallback((value: string) => setFilterValue(value), [setFilterValue]);
-  const textValue = columnFilterValue?.toString();
-
-  return filterVariant === filterType.select
-    ? (
-      <Dropdown
-        showClear
-        value={textValue}
-        onChange={handleSetDropdownValue}
-        options={sortedUniqueValues.map(value => value ?? '')}
-        optionLabel="name"
-        placeholder="Dropdown..."
-        pt={dropdownPt}
-      />
-    )
-    : filterVariant === filterType.textSelect
-      ? (
-        <Dropdown
-          filter
-          showClear
-          showFilterClear
-          value={textValue}
-          onChange={handleSetDropdownValue}
-          options={sortedUniqueValues.map(value => value ?? '')}
-          optionLabel="name"
-          placeholder="Dropdown..."
-          pt={dropdownPt}
-        />
-      )
-      : filterVariant === filterType.text
-        ? (
-          <DebouncedInput
-            placeholder="Search..."
-            value={textValue ?? ''}
-            onChange={value => handleSetTextValue(String(value))}
-            className="w-full text-sm border-1 border-round-md border-300 hover:border-blue-500 focus:border-blue-500 outline-none transition-all transition-duration-200 transition-ease-in"
-            style={{
-              padding: '.55rem'
-            }}
-          />
-        )
-        : <></>
-}, (oldProps, newProps) => {
-  const oldPropsKeys = oldProps.column.getFacetedUniqueValues().keys();
-  const newPropsKeys = newProps.column.getFacetedUniqueValues().keys()
-
-  return (oldPropsKeys === newPropsKeys) && oldProps.column.getFilterValue() === newProps.column.getFilterValue()
-});
-
-export const DebouncedInput = memo(({
-  value: initialValue = '',
-  onChange,
-  debounce = 300,
-  clearBtn = true,
-  ...props
-}: {
-  value: string | number | undefined
-  onChange: (value: string | number) => void
-  debounce?: number,
-  clearBtn?: boolean
-} & Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'>) => {
-  const [value, setValue] = useState(initialValue)
+export const StringFilter = memo(({
+  columnFilterValue,
+  setFilterValue
+}: StringFilterProps) => {
+  const [value, setValue] = useState<string>(columnFilterValue ?? '');
 
   useEffect(() => {
-    setValue(initialValue)
-  }, [initialValue])
+    setValue(columnFilterValue ?? '');
+  }, [columnFilterValue]);
 
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      onChange(value)
-    }, debounce)
-
-    return () => clearTimeout(timeout)
-  }, [value, onChange, debounce])
-
-  const handleResetFilter = useCallback(() => {
-    setValue(prev => prev === '' ? prev : '')
-  }, []);
-
-  return (<div className={`${style['filter']} flex-1`}>
-    <input
-      value={value}
-      onChange={e => setValue(e.target.value)}
-      {...props}
-    />
-    {
-      clearBtn ? (
-        <button className={classNames(
-          style['filter_cancelBtn'],
-          value ? 'opacity-100' : 'opacity-0 pointer-events-none'
-        )}>
-          <i className='pi pi-times' onClick={handleResetFilter} />
-        </button>)
-        : ''
+  const handleTextChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      setValue(event.target.value)
+      setFilterValue(event.target.value)
     }
+    , [setFilterValue]);
 
-  </div>
-  )
-}, (oldProps, newProps) => {
-  return oldProps.value === newProps.value
-})
+  return <InputText
+    placeholder='Search...'
+    value={value}
+    onChange={handleTextChange}
+    pt={inputTextPt}
+  />
+}, (oldProps, newProps) => oldProps.columnFilterValue === newProps.columnFilterValue);
 
-const dropdownPt = {
+const inputTextPt = {
   root: {
-    className: "w-full"
-  },
-  input: {
-    className: "py-2 text-sm text-left"
-  },
-  trigger: {
-    style: {
-      width: "2rem"
-    }
-  },
-  clearIcon: {
-    style: {
-      right: "2rem",
-    }
-  },
-  filterInput: {
-    className: "py-2 text-sm"
-  },
-  itemLabel: {
-    className: "text-sm"
-  },
-
-};
+    className: "relative w-full py-2 text-sm"
+  }
+}
