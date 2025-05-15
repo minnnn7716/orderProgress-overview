@@ -1,3 +1,24 @@
+/**
+ * @file StringFilter.tsx
+ * @description 文字篩選元件，用於表格 Column 中篩選字串內容
+ * @module components/Filter/StringFilter
+ * @returns {React.ReactElement} 回傳 PrimeReact 的 InputText 元件
+ * @example
+ * 傳入範例可見 src/components/VirtualizedTable/components/TableColumn.tsx
+ * <StringFilter
+ *   columnFilterValue={'搜尋文字'}
+ *   setFilterValue={setSearchText}
+ * />
+ */
+
+/**
+ * 型別定義
+ * StringFilterProps: 文字篩選器傳入參數
+ * @typedef StringFilterProps
+ * @property {string | undefined} columnFilterValue - 傳入目前已輸入的篩選文字，若無則會傳入 undefined
+ * @property {function} setFilterValue - 用於將新的篩選值設置到表格狀態的回呼函式
+ */
+
 import { useState, useEffect, useCallback, memo, type ChangeEvent } from 'react'
 
 // Components

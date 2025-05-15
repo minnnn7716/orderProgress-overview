@@ -1,3 +1,32 @@
+/**
+ * @file columnMeta.ts
+ * @description 用於定義表格欄位的類型、顯示文字及篩選方式等屬性
+ * @module config/columnMeta
+ * @returns {Object} 匯出欄位篩選類型 FilterTypeEnum 及欄位定義物件 columnMeta
+ */
+
+/**
+ * 型別定義
+ * FilterTypeEnum: 欄位篩選類型
+ * @typedef {enum} FilterTypeEnum
+ * @property {string} text - 文字搜尋篩選
+ * @property {string} select - 下拉選單篩選
+ * @property {string} textSelect - 支援文字搜尋的下拉選單篩選
+ * @property {string} numberRange - 數字範圍篩選
+ * @property {string} dateRange - 日期範圍篩選
+ * @property {string} disable - 停用篩選功能
+ * 
+ * ColumnDefinition: 欄位定義結構
+ * @typedef {Object} ColumnDefinition
+ * @property {string} type - 欄位資料類型，如 'string' 或 'number'
+ * @property {string} description - 欄位顯示中文名稱
+ * @property {string} format - 特殊格式，如日期時間使用 'date-time'
+ * @property {boolean} nullable - 欄位值是否可為 null
+ * @property {boolean} visible - 欄位是否在表格中顯示
+ * @property {string} correspondColumn - 關聯欄位，用於錯誤狀態等顯示邏輯
+ * @property {FilterTypeEnum} filterType - 欄位使用的篩選類型
+ */
+
 export enum FilterTypeEnum {
   text = 'text',
   select = 'select',

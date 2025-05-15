@@ -1,3 +1,39 @@
+/**
+ * @file VirtualizedTableBody.tsx
+ * @description 虛擬化表格 tbody 元件，將表格拆分提高易讀性與維護性
+ * @module components/VirtualizedTable/components/VirtualizedTableBody
+ * @returns {React.ReactElement} 回傳虛擬化表格的表格主體
+ * @example
+ * <TableBody
+ *   table={table}
+ *   rows={table.getRowModel().rows}
+ *   rowVirtualizer={rowVirtualizer}
+ *   leftColumns={leftColumns}
+ *   centerColumns={centerColumns}
+ *   columnSizing={columnSizing}
+ *   virtualRows={rowVirtualizer.getVirtualItems()}
+ *   virtualItems={columnVirtualizer.getVirtualItems()}
+ *   virtualPaddingLeft={columnVirtualizer.getVirtualPadding('start')}
+ *   virtualPaddingRight={columnVirtualizer.getVirtualPadding('end')}
+ * />
+ */
+
+/**
+ * 型別定義
+ * TableBodyProps: 表格主體元件傳入參數
+ * @typedef TableBodyProps
+ * @property {Table<RowData>} table - TanStack Table 實體
+ * @property {Row<RowData>[]} rows - 表格行資料陣列
+ * @property {Virtualizer<HTMLDivElement, Element>} rowVirtualizer - 行虛擬化處理器
+ * @property {Column<RowData, unknown>[]} leftColumns - 左側釘選的欄位陣列
+ * @property {Column<RowData, unknown>[]} centerColumns - 中間可滾動的欄位陣列（除了釘選外的欄位）
+ * @property {ColumnSizingState} columnSizing - 欄位寬度狀態
+ * @property {VirtualItem[]} virtualRows - 虛擬化的行項目
+ * @property {VirtualItem[]} virtualItems - 虛擬化的列項目
+ * @property {number} [virtualPaddingLeft] - 左側虛擬內容的填充寬度
+ * @property {number} [virtualPaddingRight] - 右側虛擬內容的填充寬度
+ */
+
 import { memo } from "react";
 
 // Components

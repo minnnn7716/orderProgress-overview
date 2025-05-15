@@ -1,3 +1,10 @@
+/**
+ * @file dataTypes.ts
+ * @description 表格資料型別定義檔案，基於 columnMeta 設定動態產生表格欄位與資料的型別
+ * @module types/dataTypes
+ * @returns {Object} 匯出各種表格資料相關的型別定義
+ */
+
 // 透過本地端 columnMeta 定義 Column、Row、Cell 型別
 import { columnMeta, FilterTypeEnum } from 'src/config/columnMeta'
 export type ColumnMeta = typeof columnMeta;

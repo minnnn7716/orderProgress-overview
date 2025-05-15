@@ -2,8 +2,8 @@
 import { createColumnHelper } from '@tanstack/react-table'
 
 // Components
-import { TableColumnContent } from '../components/TableColumnFormatter'
-import { TableCellContent } from '../components/TableCellFormatter';
+import { TableColumnFormatter } from '../components/TableColumnFormatter'
+import { TableCellFormatter } from '../components/TableCellFormatter';
 
 // Types
 import { ColumnMeta, RowData } from 'src/types/dataTypes';
@@ -11,7 +11,7 @@ import { ColumnMeta, RowData } from 'src/types/dataTypes';
 // Utils
 import { getRemindStyle, filterRules } from './tableUtils';
 
-export const generateColumns = (columnData: ColumnMeta) => {
+export const generateTable = (columnData: ColumnMeta) => {
   const columnHelper = createColumnHelper<RowData>();
 
   return Object.entries(columnData)
@@ -19,8 +19,8 @@ export const generateColumns = (columnData: ColumnMeta) => {
       columnHelper.accessor((row) => row[key as keyof RowData], {
         id: key,
         size: 200,
-        header: TableColumnContent,
-        cell: TableCellContent,
+        header: TableColumnFormatter,
+        cell: TableCellFormatter,
         meta: {
           columnKey: key,
           columnInfo: info,

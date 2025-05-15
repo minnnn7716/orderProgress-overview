@@ -8,6 +8,6 @@ export interface IVirtualizedTableProps {
   initialState?: InitialTableState;
   rowData: RowData[];
   setDataLength: Dispatch<SetStateAction<DataLengthProps>>;
-  setTableState: Dispatch<SetStateAction<TablePinSortState>>;
-  setTableHandler: Dispatch<SetStateAction<TablePinSortHandler>>;
+  setTablePinSortState: Dispatch<SetStateAction<TablePinSortState>>;
+  setTablePinSortHandler: Dispatch<SetStateAction<TablePinSortHandler>>;
 }

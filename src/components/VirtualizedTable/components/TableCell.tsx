@@ -1,3 +1,23 @@
+/**
+ * @file TableCell.tsx
+ * @description 表格 Cell 元件，用於虛擬化表格中的 Cell 的渲染
+ * @module components/VirtualizedTable/components/TableCell
+ * @returns {React.ReactElement} 回傳表格 Cell 元件
+ * @example
+ * <TableCell
+ *   cell={cell}
+ *   styleProps={{ width: '200px', height: '48px' }}
+ * />
+ */
+
+/**
+ * 型別定義
+ * TableCellProps: 表格 Cell 元件傳入參數
+ * @typedef TableCellProps
+ * @property {Cell<RowData, unknown>} cell - 來自 TanStack Table 的 Cell 資料
+ * @property {CSSProperties} styleProps - 傳入用於設置 Cell 樣式的 CSS 屬性
+ */
+
 import { memo, type CSSProperties } from "react";
 import { flexRender } from "@tanstack/react-table";
 import { useOverflowTooltip } from "src/hooks/useOverflowTooltip";
@@ -40,17 +60,20 @@ export const TableCell = memo((
       ...getDraggingStyles(
         isDragging,
         isPinned,
+        // transform 為 dnd-kit 提供拖曳後的值，僅取出 x 軸向的數值
         CSS.Translate.toString({ x: transform?.x || 0, y: 0, scaleX: 1, scaleY: 1 }))
     }}
   >
     <div
       ref={headerRef}
       className={classNames(style.overRowContainer, 'toolTip-target')}
+      // 若內容溢出會判定可顯示 tooltip 看見全部資訊
       data-pr-tooltip={needsTooltip ? tooltipContent : ''}
       data-pr-position={tooltipPosition}
       onMouseEnter={checkOverflow}
     >
       <p ref={contentRef} className="m-0">
+        {/* 將 TableCellFormatter 格式化模板傳入 generateTable，再透過 flexRender 取出已格式化的內容 */}
         {flexRender(
           cell.column.columnDef.cell,
           cell.getContext()

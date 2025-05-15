@@ -1,3 +1,25 @@
+/**
+ * @file TableColumn.tsx
+ * @description 表格 Column 元件，用於虛擬化表格中的 Column 渲染，提供拖曳排序、釘選、篩選、拖拉欄寬功能
+ * @module components/VirtualizedTable/components/TableColumn
+ * @returns {React.ReactElement} 回傳表格 Column 元件
+ * @example
+ * <TableColumn
+ *   header={header}
+ *   column={column}
+ *   styleProps={{ width: '200px', height: '48px' }}
+ * />
+ */
+
+/**
+ * 型別定義
+ * TableColumnProps: 表格 Column 元件傳入參數
+ * @typedef TableColumnProps
+ * @property {Header<RowData, unknown>} header - 來自 TanStack Table 的 Header 資料
+ * @property {Column<RowData>} column - 來自 TanStack Table 的 Column 資料
+ * @property {CSSProperties} styleProps - 傳入用於設置 Column 樣式的 CSS 屬性
+ */
+
 import { useCallback, memo, type CSSProperties } from 'react';
 import { flexRender } from '@tanstack/react-table';
 
@@ -51,7 +73,9 @@ export const TableColumn = memo(({
     getToggleSortingHandler
   } = column;
 
+  // 取得篩選器類型
   const { filterVariant } = columnDef.meta ?? {};
+  // 取得 NumberFilter 篩選器的最小值和最大值
   const [facetedMinValue, facetedMaxValue] = getFacetedMinMaxValues() ?? [undefined, undefined];
 
   const isPinned = getIsPinned() === 'left';
@@ -78,16 +102,18 @@ export const TableColumn = memo(({
     }}
     onMouseEnter={checkOverflow}
   >
+    {/* 拖拉更動欄寬區塊 */}
     <div
       className={classNames('resizer', style.customResizer, header.column.getIsResizing() && 'isResizing')}
       onDoubleClick={() => resetSize()}
       onMouseDown={header.getResizeHandler()}
       onTouchStart={header.getResizeHandler()}
-    >
-    </div>
+    />
 
+    {/* 拖曳改變排序區塊 */}
     <div className={style.dndBlock} {...attributes} {...listeners} />
 
+    {/* Column 容器 */}
     <div
       className="relative z-5 flex align-items-center mb-2 cursor-pointer"
       onClick={getToggleSortingHandler()}
@@ -110,7 +136,7 @@ export const TableColumn = memo(({
           )}
         </p>
       </div>
-      {/* 排序 icon，點擊行為綁定於整個標題 div（column.getToggleSortingHandler()） */}
+      {/* 排序 icon，點擊行為綁定於標題 div（getToggleSortingHandler()） */}
       {{
         asc: <i className="pi pi-sort-amount-down ml-2" />,
         desc: <i className="pi pi-sort-amount-up-alt ml-2" />,

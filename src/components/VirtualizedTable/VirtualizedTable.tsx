@@ -1,3 +1,37 @@
+/**
+ * @file VirtualizedTable.tsx
+ * @description 虛擬化表格元件，支援大量資料高效能渲染、欄位拖曳排序、釘選與篩選功能
+ * @module components/VirtualizedTable/VirtualizedTable
+ * @returns {React.ReactElement} 回傳完整的虛擬化表格元件，包含表格狀態、標題與內容列
+ * @example
+ * <VirtualizedTable
+ *   rowData={tableData}
+ *   error={error}
+ *   message={errorMessage}
+ *   isLoading={loading}
+ *   isCaching={caching}
+ *   initialState={{ sorting: [{ id: 'orderNo', desc: false }] }}
+ *   setDataLength={setDataLengthHandler}
+ *   setTablePinSortState={setTableState}
+ *   setTablePinSortHandler={setTableHandler}
+ * />
+ */
+
+/**
+ * 型別定義
+ * IVirtualizedTableProps: 虛擬化表格元件傳入參數
+ * @typedef IVirtualizedTableProps
+ * @property {Error | null} error - 表格載入錯誤，若無則為 null
+ * @property {string} message - API Response 回傳的錯誤訊息
+ * @property {boolean} isLoading - 表格資料是否正在載入中
+ * @property {boolean} isCaching - 表格資料是否正在快取中
+ * @property {RowData[]} rowData - 表格資料陣列
+ * @property {InitialTableState} [initialState] - TanStack Table 的初始狀態
+ * @property {function} setDataLength - 設置資料長度狀態的回呼函式
+ * @property {function} setTablePinSortState - 設置表格釘選和排序狀態的回呼函式
+ * @property {function} setTablePinSortHandler - 設置處理表格釘選和排序的回呼函式
+ */
+
 import { useRef, memo } from 'react'
 import { useVirtualizedTable, useTableEffect } from './hooks';
 
@@ -22,8 +56,8 @@ export const VirtualizedTable = memo(({
   rowData,
   initialState,
   setDataLength,
-  setTableState,
-  setTableHandler
+  setTablePinSortState,
+  setTablePinSortHandler
 }: IVirtualizedTableProps) => {
   const tableContainerRef = useRef<HTMLDivElement>(null);
   const tooltipRef = useRef<Tooltip>(null);
@@ -50,6 +84,7 @@ export const VirtualizedTable = memo(({
     tableContainerRef
   });
 
+  // dnd-kit 拖曳感應器
   const sensors = useSensors(
     useSensor(MouseSensor, {}),
     useSensor(TouchSensor, {}),
@@ -66,8 +101,8 @@ export const VirtualizedTable = memo(({
     isFilter: table.getState().columnFilters.length > 0,
     filterRowLength: table.getFilteredRowModel().rows.length,
     setDataLength,
-    setTableState,
-    setTableHandler,
+    setTablePinSortState,
+    setTablePinSortHandler,
   })
 
   return (

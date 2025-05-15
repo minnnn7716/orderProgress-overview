@@ -1,3 +1,41 @@
+/**
+ * @file useTableEffect.tsx
+ * @description 抽取 VirtualTable 的 Effect 統一管理，用於處理 VirtualTable 的副作用，包含 tooltip 更新、資料長度更新及表格狀態處理
+ * @module components/VirtualizedTable/hooks/useTableEffect
+ * @returns {void} 不回傳值，僅設置狀態和副作用
+ * @example
+ * useTableEffect({
+ *   table: tableInstance,
+ *   tooltipRef: tooltipReference,
+ *   virtualColumns: columnVirtualizer.getVirtualItems(),
+ *   virtualRows: rowVirtualizer.getVirtualItems(),
+ *   visibleColumnsLength: table.getVisibleLeafColumns().length,
+ *   columnOrder: table.getState().columnOrder,
+ *   isFilter: table.getState().columnFilters.length > 0,
+ *   filterRowLength: filteredRowsLength,
+ *   setDataLength: setDataLengthState,
+ *   setTablePinSortState: setTablePinSortState,
+ *   setTablePinSortHandler: setTablePinSortHandler
+ * });
+ */
+
+/**
+ * 型別定義
+ * useTableEffectProps: VirtualTable useEffect 集合的傳入參數
+ * @typedef useTableEffectProps
+ * @property {Table<RowData>} table - TanStack Table 實體
+ * @property {RefObject<Tooltip>} tooltipRef - 提示工具參考物件
+ * @property {VirtualItem[]} virtualColumns - 虛擬化的欄位項目
+ * @property {VirtualItem[]} virtualRows - 虛擬化的行項目
+ * @property {number} visibleColumnsLength - 可見欄位數量
+ * @property {ColumnOrderState} columnOrder - 欄位排序狀態
+ * @property {boolean} isFilter - 是否有篩選條件
+ * @property {number} filterRowLength - 篩選後的資料行數
+ * @property {Dispatch<SetStateAction<DataLengthProps>>} setDataLength - 設置資料長度狀態的函式
+ * @property {Dispatch<SetStateAction<TablePinSortState>>} setTablePinSortState - 設置表格釘選和排序狀態的函式
+ * @property {Dispatch<SetStateAction<TablePinSortHandler>>} setTablePinSortHandler - 設置處理表格釘選和排序的函式
+ */
+
 import { useEffect, type RefObject, type Dispatch, type SetStateAction } from "react";
 
 // Configs
@@ -24,8 +62,8 @@ type useTableEffectProps = {
   isFilter: boolean;
   filterRowLength: number;
   setDataLength: Dispatch<SetStateAction<DataLengthProps>>;
-  setTableState: Dispatch<SetStateAction<TablePinSortState>>;
-  setTableHandler: Dispatch<SetStateAction<TablePinSortHandler>>;
+  setTablePinSortState: Dispatch<SetStateAction<TablePinSortState>>;
+  setTablePinSortHandler: Dispatch<SetStateAction<TablePinSortHandler>>;
 }
 
 const metaDataKeys = Object.keys(columnMeta);
@@ -41,20 +79,22 @@ export const useTableEffect = (props: useTableEffectProps) => {
     isFilter,
     filterRowLength,
     setDataLength,
-    setTableState,
-    setTableHandler
+    setTablePinSortState,
+    setTablePinSortHandler
   } = props;
 
   const { length: leftPinnedColumnsLength } = table.getState().columnPinning.left || [];
   const { length: columnSizingLength } = Object.keys(table.getState().columnSizing) || [];
   const rowsLength = table.getCoreRowModel().rows.length;
 
+  // 更新 tooltip 的 targetEvents
   useEffect(() => {
     if (tooltipRef.current) {
       tooltipRef.current.updateTargetEvents();
     }
   }, [tooltipRef, virtualColumns, virtualRows, columnSizingLength, leftPinnedColumnsLength])
 
+  // 更新資料長度狀態
   useEffect(() => {
     setDataLength({
       columnLength: visibleColumnsLength,
@@ -68,17 +108,19 @@ export const useTableEffect = (props: useTableEffectProps) => {
     })
   }, [table, visibleColumnsLength, rowsLength, isFilter, filterRowLength, setDataLength])
 
+  // 更新表格釘選和排序狀態
   useEffect(() => {
-    setTableState({
+    setTablePinSortState({
       isPinned: leftPinnedColumnsLength > 0,
       isSorted: JSON.stringify(columnOrder) !== JSON.stringify(metaDataKeys),
     })
-  }, [setTableState, leftPinnedColumnsLength, columnOrder])
+  }, [setTablePinSortState, leftPinnedColumnsLength, columnOrder])
 
+  // 更新表格釘選和排序的處理函式
   useEffect(() => {
     if (!table) return;
 
-    setTableHandler({
+    setTablePinSortHandler({
       handleClearAllPin: () => {
         table?.setColumnPinning({});
         table?.resetColumnPinning();
@@ -95,8 +137,9 @@ export const useTableEffect = (props: useTableEffectProps) => {
         table?.resetSorting();
       }
     })
-  }, [table, setTableHandler])
+  }, [table, setTablePinSortHandler])
 
+  // 清除篩選條件，在資料長度變化時觸發，並重置篩選條件
   useEffect(() => {
     table?.setColumnFilters([]);
     table?.resetColumnFilters();
