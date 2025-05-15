@@ -1,16 +1,13 @@
 import { Dispatch, SetStateAction } from 'react'
 import { RowData } from 'src/types/dataTypes'
 import { InitialTableState } from '@tanstack/react-table'
-import { dataLengthProps } from 'src/components/DataLength';
-import { pinListProps } from 'src/components/ClearAllPinButton';
+import { DataLengthProps } from 'src/components/DataLength';
+import { TablePinSortState, TablePinSortHandler } from 'src/types/stateTypes';
 
 export interface IVirtualizedTableProps {
-  isLoading: boolean;
-  isCaching: boolean;
-  message: string;
-  error: Error | null;
   initialState?: InitialTableState;
   rowData: RowData[];
-  setDataLength: Dispatch<SetStateAction<dataLengthProps>>;
-  setPinList: Dispatch<SetStateAction<pinListProps>>;
+  setDataLength: Dispatch<SetStateAction<DataLengthProps>>;
+  setTablePinSortState: Dispatch<SetStateAction<TablePinSortState>>;
+  setTablePinSortHandler: Dispatch<SetStateAction<TablePinSortHandler>>;
 }
