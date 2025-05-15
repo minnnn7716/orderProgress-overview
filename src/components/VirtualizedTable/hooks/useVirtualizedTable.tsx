@@ -1,16 +1,48 @@
-import { useState, useMemo, useCallback, RefObject } from 'react'
-import { useVirtualizer } from '@tanstack/react-virtual'
-import { InitialTableState } from "@tanstack/react-table";
-import { ColumnMeta, RowData } from "src/types/dataTypes"
+/**
+ * @file useVirtualizedTable.tsx
+ * @description 抽取 TanStack Table 提供的核心 Hook，設置 Table 實體與 Virtualizer 的邏輯
+ * @module components/VirtualizedTable/hooks/useVirtualizedTable
+ * @returns {Object} 回傳 Table 實體、虛擬化資料與表格操作函式
+ * @example
+ * const {
+ *   table,
+ *   rows,
+ *   centerColumns,
+ *   leftColumns,
+ *   columnSizing,
+ *   handleDragEnd,
+ *   rowVirtualizer,
+ *   virtualColumns,
+ *   virtualRows,
+ *   virtualPaddingLeft,
+ *   virtualPaddingRight
+ * } = useVirtualizedTable({
+ *   data: tableData,
+ *   columnMeta: columnMetadata,
+ *   initialState: { sorting: [{ id: 'name', desc: false }] },
+ *   tableContainerRef: containerRef
+ * });
+ */
 
-import { generateColumns } from '../utils/generateTable';
-import { getColumnWidth } from '../utils/tableUtilities';
-import { DEFAULT_COLUMN_WIDTH } from '../constants';
+/**
+ * 型別定義
+ * useVirtualizedTableProps: 虛擬化表格勾子傳入參數
+ * @typedef useVirtualizedTableProps
+ * @property {RowData[]} data - 表格資料陣列
+ * @property {ColumnMeta} columnMeta - 欄位設定的資料
+ * @property {InitialTableState} [initialState] - TanStack Table 的初始狀態
+ * @property {RefObject<HTMLDivElement>} tableContainerRef - 表格容器參考物件
+ */
 
+import { useState, useCallback, useMemo, type RefObject } from 'react';
+import { useVirtualizer } from '@tanstack/react-virtual';
+
+// Tanstack Table
 import {
   ColumnPinningState,
   ColumnFiltersState,
   ColumnSizingState,
+  ColumnOrderState,
   getCoreRowModel,
   getSortedRowModel,
   getFilteredRowModel,
@@ -20,22 +52,42 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 
+// Dnd-kit
+import { type DragEndEvent } from '@dnd-kit/core';
+import { arrayMove } from '@dnd-kit/sortable';
+
+// Types
+import { InitialTableState } from "@tanstack/react-table";
+import { ColumnMeta, RowData } from "src/types/dataTypes"
+
+// Utils
+import { generateTable } from '../utils/generateTable';
+import { getColumnWidth } from '../utils/tableUtils';
+
+// Constants
+import { DEFAULT_COLUMN_WIDTH } from '../constants';
+
+type useVirtualizedTableProps = {
+  data: RowData[];
+  columnMeta: ColumnMeta;
+  initialState?: InitialTableState
+  tableContainerRef: RefObject<HTMLDivElement>
+}
+
 export const useVirtualizedTable = ({
   data,
   columnMeta,
   initialState,
   tableContainerRef
-}: {
-  data: RowData[];
-  columnMeta: ColumnMeta;
-  initialState?: InitialTableState
-  tableContainerRef: RefObject<HTMLDivElement>
-}) => {
+}: useVirtualizedTableProps) => {
+  const columns = useMemo(() => generateTable(columnMeta), [columnMeta]);
   const [columnPinning, setColumnPinning] = useState<ColumnPinningState>({});
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnSizing, setColumnSizing] = useState<ColumnSizingState>({});
+  const [columnOrder, setColumnOrder] = useState<ColumnOrderState>(() => columns.map(c => c.id!));
 
-  const invisibleColumns = useMemo<Record<string, boolean>>(() => (
+  // 依據 MetaData 設置欄位可見性
+  const columnVisibilityState = useMemo<Record<string, boolean>>(() => (
     Object.fromEntries(
       Object.entries(columnMeta)
         .filter(([, info]) => !info.visible)
@@ -43,9 +95,9 @@ export const useVirtualizedTable = ({
     )
   ), [columnMeta]);
 
-  const columns = useMemo(() => generateColumns(columnMeta), [columnMeta]);
-
+  //#region  TanStack Table 實體
   const table = useReactTable({
+    initialState,
     data,
     columns,
     columnResizeMode: 'onChange',
@@ -54,11 +106,13 @@ export const useVirtualizedTable = ({
       columnPinning,
       columnFilters,
       columnSizing,
-      columnVisibility: invisibleColumns
+      columnOrder,
+      columnVisibility: columnVisibilityState,
     },
     onColumnFiltersChange: setColumnFilters,
     onColumnPinningChange: setColumnPinning,
     onColumnSizingChange: setColumnSizing,
+    onColumnOrderChange: setColumnOrder,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -68,15 +122,14 @@ export const useVirtualizedTable = ({
     debugTable: true,
     debugHeaders: true,
     debugColumns: true,
-    initialState,
   });
-
+  //#endregion
+  
+  //#region Virtualizer
   const { rows } = table.getRowModel();
   const visibleColumns = table.getVisibleLeafColumns();
   const centerColumns = table.getCenterVisibleLeafColumns();
   const leftColumns = table.getLeftVisibleLeafColumns();
-
-  //#region Virtualizer
   const columnVirtualizer = useVirtualizer({
     count: visibleColumns.length,
     estimateSize: useCallback((index) => {
@@ -134,12 +187,58 @@ export const useVirtualizedTable = ({
   }, [columnVirtualizer, virtualColumns, centerColumns.length, tableContainerRef]);
   //#endregion
 
+  // #region 拖曳行為
+  const dragEnd = useCallback((event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (active && over && active.id !== over.id) {
+      setColumnOrder(columnOrder => {
+        const oldIndex = columnOrder.indexOf(active.id as string);
+        const newIndex = columnOrder.indexOf(over.id as string);
+        return arrayMove(columnOrder, oldIndex, newIndex);
+      })
+    }
+  }, [])
+
+  const handleDragEnd = useCallback((event: DragEndEvent) => {
+    // 當超出範圍時，直接返回
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    // 拖曳非釘選欄為時的行為，釘選與非釘選欄位無法互相拖曳，僅能在自己的區塊內移動
+    if (centerColumns.some(col => col.id === active.id) &&
+      centerColumns.some(col => col.id === over.id)) {
+      dragEnd(event);
+    }
+
+    // 拖曳釘選欄位時的行為
+    if (leftColumns.some(col => col.id === active.id) &&
+      leftColumns.some(col => col.id === over.id)) {
+      dragEnd(event);
+
+      // 更新釘選欄位的狀態
+      setColumnPinning(prev => {
+        const currentPinned = [...(prev.left || [])];
+        const oldIndex = currentPinned.indexOf(active.id as string);
+        const newIndex = currentPinned.indexOf(over.id as string);
+
+        return {
+          ...prev,
+          left: arrayMove(currentPinned, oldIndex, newIndex)
+        };
+      });
+    }
+  }, [centerColumns, leftColumns, dragEnd]);
+  // #endregion
+
   return {
     table,
     rows,
     centerColumns,
     leftColumns,
     columnSizing,
+    columnOrder,
+    handleDragEnd,
     rowVirtualizer,
     virtualColumns,
     virtualRows,
