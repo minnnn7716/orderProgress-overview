@@ -4,7 +4,7 @@ import { memo } from 'react'
 import { HeaderContext } from '@tanstack/react-table'
 import { RowData } from 'src/types/dataTypes';
 
-export const TableHeader = memo((headerCtx: HeaderContext<RowData, RowData>) => {
+export const TableColumnContent = memo((headerCtx: HeaderContext<RowData, RowData>) => {
   const { columnKey, columnInfo } = headerCtx.column.columnDef.meta ?? {};
 
   return <>

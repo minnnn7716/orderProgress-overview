@@ -5,7 +5,13 @@ import App from 'src/App';
 
 import 'src/styles/main.scss';
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnReconnect: true,
+    },
+  },
+});
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

@@ -4,6 +4,8 @@ import { fetchOrders, fetchCheckExcel, fetchOrderCacheTime, fetchDownLoadExcel }
 // Types
 import { ApiProps } from "src/features/order/types";
 
+const staleTime = 5 * 60 * 1000;
+
 export const useOrders = (searchParams: ApiProps) => (
   useQuery({
     queryKey: [
@@ -12,6 +14,7 @@ export const useOrders = (searchParams: ApiProps) => (
       searchParams.custID ?? ''
     ],
     queryFn: () => fetchOrders(searchParams),
+    staleTime,
   })
 );
 
@@ -19,6 +22,7 @@ export const useOrderCacheTime = () => (
   useQuery({
     queryKey: ['orderCacheTime'],
     queryFn: fetchOrderCacheTime,
+    staleTime
   })
 )
 
@@ -30,6 +34,7 @@ export const useCheckOrderExcel = (searchParams: ApiProps) => (
       searchParams.custID ?? ''
     ],
     queryFn: () => fetchCheckExcel(searchParams),
+    staleTime
   })
 )
 

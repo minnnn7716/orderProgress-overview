@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState, useLayoutEffect, LegacyRef } from "react";
+import { useState, useRef, useCallback, useLayoutEffect, LegacyRef } from "react";
 
 export const useOverflowTooltip = (defaultPosition: 'right' | 'left' = 'right'): {
   contentRef: LegacyRef<HTMLDivElement>,

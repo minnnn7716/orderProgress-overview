@@ -1,5 +1,5 @@
 // 透過本地端 columnMeta 定義 Column、Row、Cell 型別
-import { columnMeta, filterType } from 'src/config/columnMeta'
+import { columnMeta, FilterTypeEnum } from 'src/config/columnMeta'
 export type ColumnMeta = typeof columnMeta;
 export type ColumnMetaKey = keyof ColumnMeta;
 export type ColumnType = ColumnMeta[ColumnMetaKey]['type'];
@@ -20,7 +20,7 @@ export type ColumnDefinition = {
   format: string;
   visible: boolean;
   correspondColumn: string;
-  filterType: filterType | null;
+  filterType: FilterTypeEnum;
 }
 
 // ColumnValueType 描述依據 ColumnDefinition 判斷欄位「值」對應的型別

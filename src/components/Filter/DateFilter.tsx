@@ -4,43 +4,44 @@ import { useState, useCallback, memo } from 'react'
 import { Calendar } from 'primereact/calendar';
 
 // Types
-import { Column } from '@tanstack/react-table'
-import { ColumnDefinition, ColumnValueType, RowData } from 'src/types/dataTypes'
-import { filterType } from 'src/config/columnMeta';
 import { Nullable, FormEvent } from "primereact/ts-helpers";
 
-export const DateFilter = memo(({ column }: { column: Column<RowData, ColumnValueType<ColumnDefinition>> }) => {
-  const [, setDates] = useState<Nullable<(Date | null)[]>>(null);
-  const { filterVariant } = column.columnDef.meta ?? {};
-  const { setFilterValue } = column;
-  const columnFilterValue = column.getFilterValue();
+export type DateRange = Nullable<(Date | null)[]>;
 
-  const handleChange = useCallback((e: FormEvent<Date[]>) => {
-    setDates(e.target.value)
-    setFilterValue(e.target.value)
+type DateFilterProps = {
+  columnFilterValue: DateRange | undefined;
+  setFilterValue: (updater: DateRange | '') => void;
+}
+
+export const DateFilter = memo(({
+  columnFilterValue,
+  setFilterValue
+}: DateFilterProps) => {
+  const [, setDates] = useState<DateRange>(null);
+
+  const handleAction = useCallback((type: 'change' | 'clear', event?: FormEvent<DateRange>) => {
+    if (type === 'change' && event) {
+      const { value } = event.target;
+      setDates(value)
+      setFilterValue(value)
+    } else if (type === 'clear') {
+      setDates(null)
+      setFilterValue('')
+    }
   }, [setDates, setFilterValue]);
 
-  const handleClear = useCallback(() => {
-    setDates(null)
-    setFilterValue('')
-  }, [setDates, setFilterValue])
-
-  return filterVariant === filterType.dateRange
-    ? (
-      <Calendar
-        showButtonBar
-        hideOnRangeSelection
-        selectionMode="range"
-        dateFormat="yy/mm/dd"
-        placeholder="Date Range"
-        value={columnFilterValue as Nullable<(Date | null)[]>}
-        onChange={handleChange}
-        onClearButtonClick={handleClear}
-        pt={calendarPt}
-      />
-    )
-    : <></>
-}, (oldProps, newProps) => oldProps.column.getFilterValue() !== newProps.column.getFilterValue());
+  return <Calendar
+    showButtonBar
+    hideOnRangeSelection
+    selectionMode="range"
+    dateFormat="yy/mm/dd"
+    placeholder="Date Range"
+    value={columnFilterValue as DateRange}
+    onChange={e => handleAction('change', e)}
+    onClearButtonClick={() => handleAction('clear')}
+    pt={calendarPt}
+  />
+}, (oldProps, newProps) => JSON.stringify(oldProps.columnFilterValue) === JSON.stringify(newProps.columnFilterValue));
 
 const calendarPt = {
   root: {

@@ -6,7 +6,7 @@ import { filterType } from "src/config/columnMeta";
 declare module '@tanstack/react-table' {
   interface ColumnMeta<TData, TValue> {
     getRemindStyle: (cellCtx: CellContext<TData, TValue>) => React.CSSProperties;
-    filterVariant: filterType | null,
+    filterVariant: filterType,
     columnInfo: ColumnDefinition;
     columnKey: string;
   }

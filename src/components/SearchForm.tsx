@@ -1,21 +1,22 @@
 import { useState, useCallback, memo } from "react"
 
-// Component
+// Components
 import { Calendar } from 'primereact/calendar';
-import { Dropdown, DropdownChangeEvent, DropdownProps } from 'primereact/dropdown';
+import { Dropdown, type DropdownChangeEvent, type DropdownProps } from 'primereact/dropdown';
 
-// Type
+// Types
 import { Dispatch, SetStateAction } from "react"
 import { FormEvent, Nullable } from "primereact/ts-helpers";
 import { custIDList, custIDType } from "src/config/custIDList";
-
 import { ApiProps } from "src/features/order";
 
 const today = new Date();
 const pastYear = new Date(today.setFullYear(today.getFullYear() - 1));
 const initialDateRange = [pastYear, new Date()];
 
-export const SearchForm = memo(({ setSearchParams }: { setSearchParams: Dispatch<SetStateAction<ApiProps>> }) => {
+export const SearchForm = memo(({
+  setSearchParams
+}: { setSearchParams: Dispatch<SetStateAction<ApiProps>> }) => {
   const [dateRange, setDateRange] = useState<Nullable<(Date | null)[]>>(initialDateRange);
   const [custID, setCustID] = useState<custIDType | null>(null);
 
@@ -24,39 +25,31 @@ export const SearchForm = memo(({ setSearchParams }: { setSearchParams: Dispatch
       return initialDateRange;
     }
 
-    const from = e.value[0];
-    const to = e.value[1];
-    let finalDate = initialDateRange;
+    const [from, to] = e.value;
+    let orderDate = initialDateRange;
 
     if (from && to) {
-      finalDate = [from, to];
+      orderDate = [from, to];
     } else if (from && !to) {
-      finalDate = [from, from];
+      orderDate = [from, from];
     } else if (!from && to) {
-      finalDate = [to, to];
+      orderDate = [to, to];
     }
 
     setDateRange(e.value);
     setSearchParams(pre => ({
       ...pre,
-      orderDate: finalDate
+      orderDate
     }))
   }, [setSearchParams]);
 
   const handleCustId = useCallback((e: DropdownChangeEvent) => {
     setCustID(e.value);
 
-    if (e.value) {
-      setSearchParams(prev => ({
-        ...prev,
-        custID: e.value.code ? e.value.code : ''
-      }))
-    } else {
-      setSearchParams(prev => ({
-        ...prev,
-        custID: ''
-      }))
-    }
+    setSearchParams(prev => ({
+      ...prev,
+      custID: e.value && e.value.code ? e.value.code : ''
+    }))
   }, [setSearchParams]);
 
   const custIDDropdownTemplate = (option: custIDType, props?: DropdownProps) => {

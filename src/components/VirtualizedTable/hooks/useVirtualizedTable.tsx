@@ -1,16 +1,12 @@
-import { useState, useMemo, useCallback, RefObject } from 'react'
-import { useVirtualizer } from '@tanstack/react-virtual'
-import { InitialTableState } from "@tanstack/react-table";
-import { ColumnMeta, RowData } from "src/types/dataTypes"
+import { useState, useCallback, useMemo, type RefObject } from 'react';
+import { useVirtualizer } from '@tanstack/react-virtual';
 
-import { generateColumns } from '../utils/generateTable';
-import { getColumnWidth } from '../utils/tableUtilities';
-import { DEFAULT_COLUMN_WIDTH } from '../constants';
-
+// Tanstack Table
 import {
   ColumnPinningState,
   ColumnFiltersState,
   ColumnSizingState,
+  ColumnOrderState,
   getCoreRowModel,
   getSortedRowModel,
   getFilteredRowModel,
@@ -20,22 +16,41 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 
+// Dnd-kit
+import { type DragEndEvent } from '@dnd-kit/core';
+import { arrayMove } from '@dnd-kit/sortable';
+
+// Types
+import { InitialTableState } from "@tanstack/react-table";
+import { ColumnMeta, RowData } from "src/types/dataTypes"
+
+// Utils
+import { generateColumns } from '../utils/generateTable';
+import { getColumnWidth } from '../utils/tableUtils';
+
+// Constants
+import { DEFAULT_COLUMN_WIDTH } from '../constants';
+
+type useVirtualizedTableProps = {
+  data: RowData[];
+  columnMeta: ColumnMeta;
+  initialState?: InitialTableState
+  tableContainerRef: RefObject<HTMLDivElement>
+}
+
 export const useVirtualizedTable = ({
   data,
   columnMeta,
   initialState,
   tableContainerRef
-}: {
-  data: RowData[];
-  columnMeta: ColumnMeta;
-  initialState?: InitialTableState
-  tableContainerRef: RefObject<HTMLDivElement>
-}) => {
+}: useVirtualizedTableProps) => {
+  const columns = useMemo(() => generateColumns(columnMeta), [columnMeta]);
   const [columnPinning, setColumnPinning] = useState<ColumnPinningState>({});
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnSizing, setColumnSizing] = useState<ColumnSizingState>({});
+  const [columnOrder, setColumnOrder] = useState<ColumnOrderState>(() => columns.map(c => c.id!));
 
-  const invisibleColumns = useMemo<Record<string, boolean>>(() => (
+  const columnVisibilityState = useMemo<Record<string, boolean>>(() => (
     Object.fromEntries(
       Object.entries(columnMeta)
         .filter(([, info]) => !info.visible)
@@ -43,9 +58,8 @@ export const useVirtualizedTable = ({
     )
   ), [columnMeta]);
 
-  const columns = useMemo(() => generateColumns(columnMeta), [columnMeta]);
-
   const table = useReactTable({
+    initialState,
     data,
     columns,
     columnResizeMode: 'onChange',
@@ -54,11 +68,13 @@ export const useVirtualizedTable = ({
       columnPinning,
       columnFilters,
       columnSizing,
-      columnVisibility: invisibleColumns
+      columnOrder,
+      columnVisibility: columnVisibilityState,
     },
     onColumnFiltersChange: setColumnFilters,
     onColumnPinningChange: setColumnPinning,
     onColumnSizingChange: setColumnSizing,
+    onColumnOrderChange: setColumnOrder,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -68,9 +84,7 @@ export const useVirtualizedTable = ({
     debugTable: true,
     debugHeaders: true,
     debugColumns: true,
-    initialState,
   });
-
   const { rows } = table.getRowModel();
   const visibleColumns = table.getVisibleLeafColumns();
   const centerColumns = table.getCenterVisibleLeafColumns();
@@ -134,12 +148,53 @@ export const useVirtualizedTable = ({
   }, [columnVirtualizer, virtualColumns, centerColumns.length, tableContainerRef]);
   //#endregion
 
+  const dragEnd = useCallback((event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (active && over && active.id !== over.id) {
+      setColumnOrder(columnOrder => {
+        const oldIndex = columnOrder.indexOf(active.id as string);
+        const newIndex = columnOrder.indexOf(over.id as string);
+        return arrayMove(columnOrder, oldIndex, newIndex);
+      })
+    }
+  }, [])
+
+  const handleDragEnd = useCallback((event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    // Only allow reordering within pinned columns
+    if (centerColumns.some(col => col.id === active.id) &&
+      centerColumns.some(col => col.id === over.id)) {
+      dragEnd(event);
+    }
+
+    if (leftColumns.some(col => col.id === active.id) &&
+      leftColumns.some(col => col.id === over.id)) {
+      dragEnd(event);
+
+      setColumnPinning(prev => {
+        const currentPinned = [...(prev.left || [])];
+        const oldIndex = currentPinned.indexOf(active.id as string);
+        const newIndex = currentPinned.indexOf(over.id as string);
+
+        return {
+          ...prev,
+          left: arrayMove(currentPinned, oldIndex, newIndex)
+        };
+      });
+    }
+  }, [centerColumns, leftColumns, dragEnd]);
+
   return {
     table,
     rows,
     centerColumns,
     leftColumns,
     columnSizing,
+    columnOrder,
+    handleDragEnd,
     rowVirtualizer,
     virtualColumns,
     virtualRows,

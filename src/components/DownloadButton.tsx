@@ -1,4 +1,4 @@
-import { memo, useCallback } from 'react';
+import { useCallback, memo, type ReactNode } from 'react';
 import { useCheckOrderExcel, useDownloadOrderExcel } from 'src/features/order';
 
 // Components
@@ -19,7 +19,15 @@ interface CustomButtonPassThroughMethodOptions extends ButtonPassThroughMethodOp
   }
 }
 
-export const DownloadButton = memo(({ searchParams, className }: { searchParams: ApiProps, className: string }) => {
+type DownloadButtonProps = {
+  searchParams: ApiProps;
+  className: string;
+}
+
+export const DownloadButton = memo(({
+  searchParams,
+  className
+}: DownloadButtonProps) => {
   const { data, isLoading, error } = useCheckOrderExcel(searchParams);
   const { mutate: dlExcel, status } = useDownloadOrderExcel();
 
@@ -50,7 +58,7 @@ export const DownloadButton = memo(({ searchParams, className }: { searchParams:
   </div>)
 });
 
-const ButtonIcon: React.ReactNode = (
+const ButtonIcon: ReactNode = (
   <img
     src={excelIcon}
     alt="下載 Excel"

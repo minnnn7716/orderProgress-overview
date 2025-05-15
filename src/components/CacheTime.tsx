@@ -2,7 +2,11 @@ import { useMemo, memo } from 'react';
 import { useOrderCacheTime } from 'src/features/order';
 import { formatDate } from 'src/utils/formatDate';
 
-export const CacheTime = memo(({ className }: { className: string }) => {
+export const CacheTime = memo(({
+  className
+}: {
+  className: string
+}) => {
   const { data: cacheTimeData } = useOrderCacheTime();
 
   const formattedCacheTime = useMemo(() => formatDate(cacheTimeData ?? '', {
