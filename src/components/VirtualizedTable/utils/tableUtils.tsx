@@ -217,7 +217,7 @@ const numberRangeFilterRule = (
   }
 
   const [minNumber, maxNumber] = numberRange;
-  const rawNumber = Number(rawValue);
+  const rawNumber = Number(rawValue) * 100;
 
   // 如果最大值與最小值相等，則只需檢查原始值是否等於該值
   if ((minNumber >= 0 && maxNumber >= 0) && (minNumber === maxNumber)) {

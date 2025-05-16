@@ -77,7 +77,7 @@ export const TableColumn = memo(({
   const { filterVariant } = columnDef.meta ?? {};
   // 取得 NumberFilter 篩選器的最小值和最大值
   const [facetedMinValue, facetedMaxValue] = getFacetedMinMaxValues() ?? [undefined, undefined];
-
+  const needConvertToRate = column.columnDef.id === 'rcvFabRate' || column.columnDef.id === 'poRate';
   const isPinned = getIsPinned() === 'left';
   const isSorted = getIsSorted();
 
@@ -171,8 +171,8 @@ export const TableColumn = memo(({
             />
             : filterVariant === FilterTypeEnum.numberRange
               ? <NumberFilter
-                facetedMinValue={facetedMinValue}
-                facetedMaxValue={facetedMaxValue}
+                facetedMinValue={needConvertToRate && facetedMinValue ? facetedMinValue * 100 : facetedMinValue}
+                facetedMaxValue={needConvertToRate && facetedMaxValue ? facetedMaxValue * 100 : facetedMaxValue}
                 columnFilterValue={getFilterValue() as [number, number] | undefined}
                 setFilterValue={setFilterValue}
               />
