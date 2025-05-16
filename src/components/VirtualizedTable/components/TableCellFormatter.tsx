@@ -39,9 +39,13 @@ export const TableCellFormatter = memo((
   }
 
   // 轉換為百分比並取到小數點第二位格式
-  if (needConvertToRate) {
-    const convertValue = typeof rawValue === 'number' && (rawValue * 100);
-    return convertValue ? convertValue .toFixed(2) : '';
+  if (needConvertToRate && typeof rawValue === 'number') {
+    const convertValue = rawValue * 100;
+    return convertValue > 0
+      ? `${convertValue.toFixed(2)}%`
+      : convertValue === 0
+        ? '0'
+        : '';
   }
 
   return <>{String(rawValue)}</>
