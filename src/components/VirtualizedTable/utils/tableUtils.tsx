@@ -162,7 +162,7 @@ export const filterRules = (
       return dateRangeFilterRule(rawValue, filterValue as Date[] | null)
 
     case FilterTypeEnum.numberRange:
-      return numberRangeFilterRule(rawValue, filterValue as number[] | null)
+      return numberRangeFilterRule(rawValue, filterValue as number[] | null, columnId)
 
     default:
       return false
@@ -206,18 +206,26 @@ const dateRangeFilterRule = (
  * @description 根據數字範圍過濾表格行
  * @param rawValue - 欄位原始值
  * @param numberRange - 數字範圍
+ * @param columnId - 欄位識別值，用於判斷是否需要轉換百分比
  * @returns 是否符合數字範圍條件
  */
 const numberRangeFilterRule = (
   rawValue: string | number | Date | null,
-  numberRange: number[] | null
+  numberRange: number[] | null,
+  columnId: string
 ) => {
   if (!numberRange) {
     return true
   }
 
   const [minNumber, maxNumber] = numberRange;
-  const rawNumber = Number(rawValue) * 100;
+  let rawNumber = Number(rawValue);
+  
+  // 判斷是否為百分比欄位，若是則將原始值轉換為百分比以符合顯示的數值
+  const isPercentageColumn = columnId === 'rcvFabRate' || columnId === 'poRate';
+  if (isPercentageColumn && typeof rawValue === 'number') {
+    rawNumber = rawNumber * 100;
+  }
 
   // 如果最大值與最小值相等，則只需檢查原始值是否等於該值
   if ((minNumber >= 0 && maxNumber >= 0) && (minNumber === maxNumber)) {
