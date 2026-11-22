@@ -2,6 +2,8 @@
 
 以 React 與 TypeScript 製作的訂單進度查詢介面，從原有內部系統整理為可獨立執行的面試展示版本。展示版完全使用虛構資料，不需登入、API key 或公司網路。
 
+[線上展示](https://minnnn7716.github.io/orderProgress-overview/)
+
 ## 執行
 
 需要 Node.js 22 或以上版本。
@@ -12,6 +14,8 @@ npm run dev
 ```
 
 正式建置：`npm run build`；預覽：`npm run preview`。產物位於 `dist/`，採相對資源路徑，可部署至靜態網站的子目錄。
+
+推送至 `main` 後，GitHub Actions 會自動建置並部署到 GitHub Pages，亦可從 Actions 手動執行 `Deploy to GitHub Pages`。
 
 ## 展示操作
 
