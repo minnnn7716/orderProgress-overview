@@ -11,8 +11,7 @@ export default defineConfig({
       },
     }),
   ],
-  // 符合 EIP 站台的路徑設定
-  base: '/Content/React/Epicor/OrderProgress',
+  base: './',
   resolve: {
     alias: {
       src: "/src"

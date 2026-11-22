@@ -30,7 +30,7 @@ import { Dropdown, type DropdownChangeEvent, type DropdownProps } from 'primerea
 // Types
 import { Dispatch, SetStateAction } from "react"
 import { FormEvent, Nullable } from "primereact/ts-helpers";
-import { custIdList, custIdType } from "src/config/custIdList";
+import { custIdList, custIdType } from "src/config/custIDList";
 import { ApiProps } from "src/features/order";
 
 const today = new Date();

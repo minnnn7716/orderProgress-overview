@@ -62,7 +62,7 @@ export const DownloadButton = memo(({
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
-        link.setAttribute('download', `產銷進度追蹤表-${formatDate(searchParams.orderDate[0]).replace(/\//g, '.')}-${formatDate(searchParams.orderDate[1]).replace(/\//g, '.')}.xlsx`);
+        link.setAttribute('download', `產銷進度追蹤表-${formatDate(searchParams.orderDate[0]).replace(/\//g, '.')}-${formatDate(searchParams.orderDate[1]).replace(/\//g, '.')}.csv`);
         link.click();
         URL.revokeObjectURL(url);
       })
@@ -72,7 +72,7 @@ export const DownloadButton = memo(({
   return (<div className={className}>
     <Button
       outlined
-      label='下載 Excel'
+      label='匯出 CSV'
       severity="success"
       icon={ButtonIcon}
       loading={status === 'pending'}
