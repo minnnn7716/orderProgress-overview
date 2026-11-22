@@ -32,14 +32,6 @@ React 18、TypeScript、Vite、PrimeReact、TanStack Table / Virtual / Query、d
 - `src/components/VirtualizedTable/`：表格狀態、虛擬捲動、拖曳與呈現。
 - `src/types/zod.table.schema.ts`：原有 API 字串資料的驗證結構，展示版產生本機 Date 物件，未接入此 schema。
 
-## 面試可討論的設計
-
-1. 大量資料的虛擬捲動與畫面渲染成本。
-2. 以欄位 metadata 統一篩選、格式與警示邏輯。
-3. 釘選、欄寬、拖曳與排序之間的狀態協作。
-4. 用 TanStack Query 管理查詢狀態與快取，資料來源可在 feature 層替換。
-5. CSV 與真正 xlsx 的格式差異，以及查詢條件與表格篩選的匯出邊界。
-
 ## 開發歷史
 
 展示儲存庫保留原有開發順序、分支合併結構與重要 commit 說明，包含類型化篩選器、釘選與欄寬、拖曳欄位、百分比與數字範圍修正。為移除歷史中的內部設定、客戶資料、文件與識別資訊，展示歷史經清理，commit SHA 與原始儲存庫不同。原始本機儲存庫仍保留原始歷史。
