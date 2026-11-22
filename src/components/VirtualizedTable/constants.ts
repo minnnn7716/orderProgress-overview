@@ -10,6 +10,8 @@
  */
 export const DEFAULT_COLUMN_WIDTH = 200;
 export const MIN_COLUMN_WIDTH = 150;
+// 實際列高約 48px，首次量測前必須使用正值，避免一次渲染上千列。
+export const ESTIMATED_ROW_HEIGHT = 50;
 
 /**
  * Cell 警示樣式

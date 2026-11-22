@@ -65,7 +65,7 @@ import { generateTable } from '../utils/generateTable';
 import { getColumnWidth } from '../utils/tableUtils';
 
 // Constants
-import { DEFAULT_COLUMN_WIDTH } from '../constants';
+import { DEFAULT_COLUMN_WIDTH, ESTIMATED_ROW_HEIGHT } from '../constants';
 
 type useVirtualizedTableProps = {
   data: RowData[];
@@ -119,9 +119,9 @@ export const useVirtualizedTable = ({
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
     getFacetedMinMaxValues: getFacetedMinMaxValues(),
-    debugTable: true,
-    debugHeaders: true,
-    debugColumns: true,
+    debugTable: import.meta.env.DEV,
+    debugHeaders: import.meta.env.DEV,
+    debugColumns: import.meta.env.DEV,
   });
   //#endregion
   
@@ -144,7 +144,7 @@ export const useVirtualizedTable = ({
 
   const rowVirtualizer = useVirtualizer({
     count: rows.length,
-    estimateSize: () => 0,
+    estimateSize: () => ESTIMATED_ROW_HEIGHT,
     getScrollElement: () => tableContainerRef.current,
     measureElement:
       typeof window !== 'undefined' &&

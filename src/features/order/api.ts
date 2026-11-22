@@ -12,7 +12,6 @@ const selectOrders = ({ orderDate: [from, to], custId }: ApiProps) => {
     (!custId || row.realCustID_c === custId));
 };
 export const fetchOrders = async (params: ApiProps): Promise<ApiData> => {
-  await new Promise(resolve => setTimeout(resolve, 250));
   return { status: 'success', data: { context: { order: selectOrders(params) } } };
 };
 export const fetchOrderCacheTime = async (): Promise<string> => mockGeneratedAt.toISOString();

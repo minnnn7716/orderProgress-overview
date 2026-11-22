@@ -76,7 +76,9 @@ export const TableColumn = memo(({
   // 取得篩選器類型
   const { filterVariant } = columnDef.meta ?? {};
   // 取得 NumberFilter 篩選器的最小值和最大值
-  const [facetedMinValue, facetedMaxValue] = getFacetedMinMaxValues() ?? [undefined, undefined];
+  const [facetedMinValue, facetedMaxValue] = filterVariant === FilterTypeEnum.numberRange
+    ? getFacetedMinMaxValues() ?? [undefined, undefined]
+    : [undefined, undefined];
   const needConvertToRate = column.columnDef.id === 'rcvFabRate' || column.columnDef.id === 'poRate';
   const isPinned = getIsPinned() === 'left';
   const isSorted = getIsSorted();
